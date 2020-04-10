@@ -6,9 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,70 +37,87 @@ public class MainActivity extends AppCompatActivity {
     String code;
     String verificationID;
     PhoneAuthCredential phoneAuthCredential;
+    TextView waiting_text_view;
+    TextView sign_in_with_textview;
+    LinearLayout thirdparty;
+    Button cancel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mAuth=FirebaseAuth.getInstance();
-       pb=findViewById(R.id.progressBar);
+        mAuth = FirebaseAuth.getInstance();
+        pb = findViewById(R.id.progressBar);
+        waiting_text_view=findViewById(R.id.textView3);
+        sign_in_with_textview=findViewById(R.id.textView2);
+        thirdparty=findViewById(R.id.linearLayout);
+        cancel=findViewById(R.id.cancel);
+
+
+        cancel.setVisibility(View.INVISIBLE);
+        waiting_text_view.setVisibility(View.INVISIBLE);
         pb.setVisibility(View.INVISIBLE);
 
 
 
-
-        final Button signin=findViewById(R.id.signin);
-       signin.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               EditText phoneno = findViewById(R.id.phone);
-               phone_string = phoneno.getText().toString();
-               if (phone_string.isEmpty() || phone_string.length() < 10) {
-                   Toast.makeText(MainActivity.this, "Invalid Phone No", Toast.LENGTH_LONG).show();
-               } else {
-                   signin.setVisibility(View.INVISIBLE);
-                   pb.setVisibility(View.VISIBLE);
-
-                   try {
-                       PhoneAuthProvider.getInstance().verifyPhoneNumber("+91" + phone_string,        // Phone number to verify
-                               60,                 // Timeout duration
-                               TimeUnit.SECONDS,   // Unit of timeout
-                               MainActivity.this,               // Activity (for callback binding)
-                               mCallbacks);        // OnVerificationStateChangedCallbacks
-                   } catch (Exception e) {
-                       Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_LONG).show();
-                   }
-
-               }
+        final Button signin = findViewById(R.id.signin);
+        signin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //to hide keyboard when user clicks on sign in
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                cancel.setVisibility(View.VISIBLE);
+                sign_in_with_textview.setVisibility(View.INVISIBLE);
+                thirdparty.setVisibility(View.GONE);
+                waiting_text_view.setVisibility(View.VISIBLE);
 
 
-           }
-
-       });
-       
-
-                 
-               }
-
-       
-
-    
 
 
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks=new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                EditText phoneno = findViewById(R.id.phone);
+                phone_string = phoneno.getText().toString();
+                if (phone_string.isEmpty() || phone_string.length() < 10) {
+                    Toast.makeText(MainActivity.this, "Invalid Phone No", Toast.LENGTH_LONG).show();
+                } else {
+                    signin.setVisibility(View.INVISIBLE);
+                    pb.setVisibility(View.VISIBLE);
+
+                    try {
+                        PhoneAuthProvider.getInstance().verifyPhoneNumber("+91" + phone_string,        // Phone number to verify
+                                60,                 // Timeout duration
+                                TimeUnit.SECONDS,   // Unit of timeout
+                                MainActivity.this,               // Activity (for callback binding)
+                                mCallbacks);        // OnVerificationStateChangedCallbacks
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+                    }
+
+                }
+
+
+            }
+
+        });
+
+
+    }
+
+
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
-            verificationID=s;
+            verificationID = s;
 
 
         }
 
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            String code=phoneAuthCredential.getSmsCode();
-            if(code!=null)
-            {
-                PhoneAuthCredential credential=PhoneAuthProvider.getCredential(verificationID,code);
+            String code = phoneAuthCredential.getSmsCode();
+            if (code != null) {
+                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationID, code);
                 signinwithcredential(credential);
             }
 
@@ -106,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
         public void onVerificationFailed(FirebaseException e) {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 
-            Intent intentp=new Intent(MainActivity.this,MainActivity.class);
-            startActivity(intentp);
+
 
         }
     };
@@ -119,18 +139,15 @@ public class MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful())
-                        {
+                        if (task.isSuccessful()) {
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
-                            if(isNew)
-                            {
+                            if (isNew) {
                                 Intent intent1 = new Intent(MainActivity.this, Main2Activity.class);
-                                intent1.putExtra("base","otp");
+                                intent1.putExtra("base", "otp");
                                 startActivity(intent1);
 
 
-                            }
-                            else {
+                            } else {
 
 
                                 Intent intent1 = new Intent(MainActivity.this, Main2Activity.class);
@@ -139,11 +156,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 Toast.makeText(MainActivity.this, "VERIFICATION SUCCESSFUL", Toast.LENGTH_SHORT).show();
                             }
-                        }
-
-                        else
-                        {
-                            Toast.makeText(MainActivity.this,"ERROR ",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "ERROR ", Toast.LENGTH_SHORT).show();
 
                         }
 
@@ -151,5 +165,12 @@ public class MainActivity extends AppCompatActivity {
                 });
 
     }
+    public  void onCancel(View v)
+    {
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+    }
+
 }
     

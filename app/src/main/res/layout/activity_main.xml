@@ -13,10 +13,10 @@
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/launcher" />
 
     <TextView
@@ -44,6 +44,7 @@
         android:layout_marginRight="50dp"
         android:backgroundTint="#2A2C9A"
         android:ems="10"
+        android:gravity="center"
         android:hint="Phone Number"
         android:inputType="phone"
         android:textColor="#2A2C9A"
@@ -74,30 +75,30 @@
         android:layout_height="0dp"
         android:layout_marginStart="50dp"
         android:layout_marginLeft="50dp"
-        android:layout_marginTop="60dp"
         android:layout_marginEnd="50dp"
         android:layout_marginRight="50dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:text="Sign In WIth"
         android:textColor="#2A2C9A"
         android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signin" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="123dp"
         android:layout_height="26dp"
-        android:layout_marginTop="16dp"
+
+        android:layout_marginBottom="100dp"
         android:background="@null"
         android:elevation="0sp"
-
         android:gravity="center"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        >
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
             android:id="@+id/imageButton"
@@ -142,5 +143,38 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phone" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginRight="50dp"
+        android:gravity="center"
+        android:text="Waiting to automatically detect OTP"
+        android:textColor="#2A2C9A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signin" />
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="70dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginRight="70dp"
+        android:background="@drawable/transperant_button"
+        android:onClick="onCancel"
+        android:text="@string/com_facebook_loginview_cancel_action"
+        android:textColor="#2A2C9A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
