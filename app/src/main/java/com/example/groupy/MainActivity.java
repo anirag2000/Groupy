@@ -15,14 +15,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
@@ -41,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     TextView sign_in_with_textview;
     LinearLayout thirdparty;
     Button cancel;
+    public GoogleApiClient googleApiClient;
+    public static final int RequestSignInCode = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,26 @@ public class MainActivity extends AppCompatActivity {
         sign_in_with_textview = findViewById(R.id.textView2);
         thirdparty = findViewById(R.id.linearLayout);
         cancel = findViewById(R.id.cancel);
+
+        ////google
+
+        // Creating and Configuring Google Sign In object.
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        // Creating and Configuring Google Api Client.
+        googleApiClient = new GoogleApiClient.Builder(MainActivity.this)
+                .enableAutoManage(MainActivity.this, new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                    }
+                } /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
+                .build();
+        ///google
 
 
         cancel.setVisibility(View.INVISIBLE);
@@ -65,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //to hide keyboard when user clicks on sign in
                 InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 cancel.setVisibility(View.VISIBLE);
                 sign_in_with_textview.setVisibility(View.INVISIBLE);
                 thirdparty.setVisibility(View.GONE);
@@ -99,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
 
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -147,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                             } else {
 
 
-                                Intent intent1 = new Intent(MainActivity.this, First_time.class);
+                                Intent intent1 = new Intent(MainActivity.this, Home.class);
                                 startActivity(intent1);
                                 FirebaseUser user = mAuth.getCurrentUser();
 
@@ -169,5 +198,69 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    public void google(View view) {
+        // Passing Google Api Client into Intent.
+        Intent AuthIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+
+        startActivityForResult(AuthIntent, RequestSignInCode);
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RequestSignInCode) {
+
+            GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+
+            if (googleSignInResult.isSuccess()) {
+
+                GoogleSignInAccount googleSignInAccount = googleSignInResult.getSignInAccount();
+
+                FirebaseUserAuth(googleSignInAccount);
+            }
+
+        }
+    }
+
+    public void FirebaseUserAuth(GoogleSignInAccount googleSignInAccount) {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
+
+        Toast.makeText(MainActivity.this, "" + authCredential.getProvider(), Toast.LENGTH_LONG).show();
+
+        firebaseAuth.signInWithCredential(authCredential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
+                            if (isNew) {
+                                Intent intent1 = new Intent(MainActivity.this, First_time.class);
+                                intent1.putExtra("base", "otp");
+                                startActivity(intent1);
+
+
+                            } else {
+
+
+                                Intent intent1 = new Intent(MainActivity.this, Home.class);
+                                startActivity(intent1);
+                                FirebaseUser user = mAuth.getCurrentUser();
+
+                                Toast.makeText(MainActivity.this, "VERIFICATION SUCCESSFUL", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, "ERROR ", Toast.LENGTH_SHORT).show();
+
+                        }
+
+                    }
+                });
+    }
 }
     

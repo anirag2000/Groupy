@@ -44,9 +44,9 @@ public class First_time extends AppCompatActivity  {
 
     public void register(View view) {
         EditText name = findViewById(R.id.name);
-        EditText email = findViewById(R.id.email);
+        EditText email = findViewById(R.id.date);
         EditText date = findViewById(R.id.date);
-        EditText group_id = findViewById(R.id.group_id);
+        EditText group_id = findViewById(R.id.group_code);
         String name_string = name.getText().toString();
         String date_string = date.getText().toString();
         String email_string = email.getText().toString();
@@ -60,7 +60,8 @@ public class First_time extends AppCompatActivity  {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("Users").child(userId);
                 User_details user_details = new User_details(name_string, date_string, email_string, group_id_string);
-
+                Intent intent=new Intent(First_time.this,Home.class);
+                startActivity(intent);
 
                 myRef.setValue(user_details);
             } catch (Exception e) {

@@ -14,16 +14,17 @@ public class launcher extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
-
+        FirebaseUser firebaseUser;
         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (currentFirebaseUser == null) {
+        if (currentFirebaseUser== null) {
             Intent intent = new Intent(launcher.this, MainActivity.class);
             startActivity(intent);
         } else {
-            Intent intent = new Intent(launcher.this, First_time.class);
+            Intent intent = new Intent(launcher.this, Home.class);
             startActivity(intent);
         }
+
+
 
 
 

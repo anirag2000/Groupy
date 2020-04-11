@@ -6,6 +6,7 @@ public class User_details {
     String email;
     String group_id;
 
+
     public User_details(String name_string, String date_string, String email_string, String group_id_string) {
         this.name = name_string;
         this.date = date_string;
@@ -44,4 +45,5 @@ public class User_details {
     public void setGroup_id(String group_id) {
         this.group_id = group_id;
     }
+
 }

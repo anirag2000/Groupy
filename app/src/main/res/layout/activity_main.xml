@@ -118,6 +118,7 @@
             android:layout_marginRight="20dp"
             android:layout_weight="1"
             android:background="@null"
+            android:onClick="google"
             app:srcCompat="@drawable/google" />
 
         <ImageButton
