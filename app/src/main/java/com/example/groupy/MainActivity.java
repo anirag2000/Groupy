@@ -48,16 +48,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
         pb = findViewById(R.id.progressBar);
-        waiting_text_view=findViewById(R.id.textView3);
-        sign_in_with_textview=findViewById(R.id.textView2);
-        thirdparty=findViewById(R.id.linearLayout);
-        cancel=findViewById(R.id.cancel);
+        waiting_text_view = findViewById(R.id.textView3);
+        sign_in_with_textview = findViewById(R.id.textView2);
+        thirdparty = findViewById(R.id.linearLayout);
+        cancel = findViewById(R.id.cancel);
 
 
         cancel.setVisibility(View.INVISIBLE);
         waiting_text_view.setVisibility(View.INVISIBLE);
         pb.setVisibility(View.INVISIBLE);
-
 
 
         final Button signin = findViewById(R.id.signin);
@@ -66,13 +65,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //to hide keyboard when user clicks on sign in
                 InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 cancel.setVisibility(View.VISIBLE);
                 sign_in_with_textview.setVisibility(View.INVISIBLE);
                 thirdparty.setVisibility(View.GONE);
                 waiting_text_view.setVisibility(View.VISIBLE);
-
-
 
 
                 EditText phoneno = findViewById(R.id.phone);
@@ -104,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
@@ -128,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 
 
-
         }
     };
 
@@ -142,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                             if (isNew) {
-                                Intent intent1 = new Intent(MainActivity.this, Main2Activity.class);
+                                Intent intent1 = new Intent(MainActivity.this, First_time.class);
                                 intent1.putExtra("base", "otp");
                                 startActivity(intent1);
 
@@ -150,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                             } else {
 
 
-                                Intent intent1 = new Intent(MainActivity.this, Main2Activity.class);
+                                Intent intent1 = new Intent(MainActivity.this, First_time.class);
                                 startActivity(intent1);
                                 FirebaseUser user = mAuth.getCurrentUser();
 
@@ -165,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
                 });
 
     }
-    public  void onCancel(View v)
-    {
+
+    public void onCancel(View v) {
         Intent intent = getIntent();
         finish();
         startActivity(intent);
