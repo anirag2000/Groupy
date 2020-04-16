@@ -5,13 +5,23 @@ public class User_details {
     String date;
     String email;
     String group_id;
+    String photourl;
 
 
-    public User_details(String name_string, String date_string, String email_string, String group_id_string) {
+    public User_details(String name_string, String date_string, String email_string, String group_id_string, String photourl) {
         this.name = name_string;
         this.date = date_string;
         this.email = email_string;
         this.group_id = group_id_string;
+        this.photourl = photourl;
+    }
+
+    public String getPhotourl() {
+        return photourl;
+    }
+
+    public void setPhotourl(String photourl) {
+        this.photourl = photourl;
     }
 
     public String getName() {

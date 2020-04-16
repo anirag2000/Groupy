@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class launcher extends AppCompatActivity {
 
@@ -20,7 +21,7 @@ public class launcher extends AppCompatActivity {
             Intent intent = new Intent(launcher.this, MainActivity.class);
             startActivity(intent);
         } else {
-            Intent intent = new Intent(launcher.this, Home.class);
+            Intent intent = new Intent(launcher.this, First_time.class);
             startActivity(intent);
         }
 
