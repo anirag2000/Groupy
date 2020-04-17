@@ -58,20 +58,29 @@ public class Dms extends Fragment { //Nothing But displaying all users
 
         reference=database.getReference("Users");
 
+
+
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String currentuser=firebaseUser.getUid();
+                String groupcode= dataSnapshot.child(currentuser).child("group_id").getValue(String.class);
+                mUsers.clear();
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+
                     User_details user = snapshot.getValue(User_details.class);
                     assert user!=null;
                     assert firebaseUser!=null;
-                    if(!user.getName().equals(firebaseUser.getDisplayName())){
-                        mUsers.add(user);
+                    if(user.getGroup_id().equals(groupcode)){
+                        if(!user.getUid().equals(firebaseUser.getUid())) {
+                            mUsers.add(user);
+                        }
                     }
                 }
                 userAdapter = new UserAdapter(getContext(),mUsers);
                 recyclerView.setAdapter(userAdapter);
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
