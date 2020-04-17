@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +33,6 @@ import com.example.groupy.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -42,12 +40,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessagingActivity extends AppCompatActivity {
 
+    CircleImageView rimage;
     CircleImageView image;
     TextView text;
     Intent intent;
     FirebaseAuth auth;
     FirebaseDatabase database=FirebaseDatabase.getInstance();
     DatabaseReference reference;
+    DatabaseReference temp;
     FirebaseUser firebaseUser;
 
     ImageButton send;
@@ -81,10 +81,11 @@ public class MessagingActivity extends AppCompatActivity {
 
 
         //initialize all the components on screen
-        image=findViewById(R.id.circleimage);
+        rimage=findViewById(R.id.rimage);
         text=findViewById(R.id.username);
         send=findViewById(R.id.send);
         message=findViewById(R.id.typed_message);
+        image=findViewById(R.id.circleimage);
 
 
         //whats the receiver's details for the page load
@@ -101,21 +102,29 @@ public class MessagingActivity extends AppCompatActivity {
 
         //loading the page
         final String userid=intent.getStringExtra("userid");
-        reference=database.getReference("Users").child(userid);
+        reference=database.getReference("Users");
+        String currentuser=FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User_details user = dataSnapshot.getValue(User_details.class);
-                text.setText(user.getName());
-                if(user.getPhotourl().equals("default")){
-                    image.setImageResource(R.mipmap.ic_launcher);
-                }
-                else{
-                    Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(image);
-                }
+                User_details user = dataSnapshot.child(userid).getValue(User_details.class);
+                //User_details user = dataSnapshot.child(currentuser).getValue(User_details.class);
+              //  Log.e("this is walter",userid);
+               // Log.e("this is the me",ruser.getName());
 
-                readmessages(firebaseUser.getUid(),userid,user.getPhotourl());
+                //for the receiver
+                text.setText(user.getName());
+
+                Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(image);
+
+
+                //for the sender
+                   // Log.e("this is the photourl",user.getPhotourl());
+                    //Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(rimage);
+
+
+                readmessages(firebaseUser.getUid(),userid,user.getPhotourl(),currentuser);
             }
 
             @Override
@@ -169,7 +178,7 @@ public class MessagingActivity extends AppCompatActivity {
         reference.child("Chats").push().setValue(hashMap);
     }
 
-    private void readmessages(final String sender, final String receiver, final String imageurl){
+    private void readmessages(final String sender, final String receiver, final String imageurl,String currentuser){
         reference=database.getReference("Chats");
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -190,7 +199,7 @@ public class MessagingActivity extends AppCompatActivity {
 
                 }
 
-                messageAdapter=new ChatAdapter(MessagingActivity.this,texts,imageurl);
+                messageAdapter=new ChatAdapter(MessagingActivity.this,texts,imageurl,currentuser);
                 recyclerView.setAdapter(messageAdapter);
 
 

@@ -13,6 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -27,13 +32,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
     private Context mContext;
     private List<Chat> texts;
     private String imageurl;
+    private String currentuser;
 
     FirebaseUser firebaseUser;
 
-    public ChatAdapter(Context mContext,List<Chat> texts,String imageurl){
+    public ChatAdapter(Context mContext,List<Chat> texts,String imageurl,String currentuser){
         this.mContext=mContext;
         this.texts=texts;
         this.imageurl=imageurl;
+        this.currentuser=currentuser;
         setHasStableIds(true);
     }
 
@@ -63,14 +70,30 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
         holder.textmessage.setText(chat.getMessage());
 
-        //doubt???? where is the imageurl coming from ?? possibly the constructor
+      DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Users").child(currentuser);
+      reference.addValueEventListener(new ValueEventListener() {
+          @Override
+          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+              String currentuserphoto=dataSnapshot.child("photourl").getValue(String.class);
+          }
 
-        if(imageurl.equals("default")){
-            holder.image.setImageResource(R.drawable.ic_launcher_foreground);
+          @Override
+          public void onCancelled(@NonNull DatabaseError databaseError) {
+
+          }
+      });
+
+
+        int type=getItemViewType(position);
+
+        if(type==MSG_TYPE_RIGHT){
+            Glide.with(mContext).load(currentuser).into(holder.rimage);
         }
         else {
             Glide.with(mContext).load(imageurl).into(holder.image);
         }
+
+
 
     }
 
@@ -81,12 +104,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
     public class viewholder extends RecyclerView.ViewHolder {
         public CircleImageView image;
+        public CircleImageView rimage;
         public TextView textmessage;
 
         public viewholder(View itemView) {
             super(itemView);
             textmessage = itemView.findViewById(R.id.textmessage);
             image = itemView.findViewById(R.id.circleimage);
+            rimage=itemView.findViewById(R.id.rimage);
         }
 
     }
