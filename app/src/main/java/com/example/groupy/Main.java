@@ -1,5 +1,6 @@
 package com.example.groupy;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -18,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -79,7 +82,13 @@ public class Main extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentFirebaseUser!= null) {
+          uid=currentFirebaseUser.getUid();
+        } else {
+            Intent intent = new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -96,10 +105,29 @@ public class Main extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("Users").child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+group_id=snapshot.child("group_id").getValue(String.class);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+                recyclerView = view.findViewById(R.id.recyclerView);
+                recyclerView.setLayoutManager(layoutManager);
+                getInfo();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
 
 
-        SharedPreferences prefs = getActivity().getSharedPreferences("group", MODE_PRIVATE);
-        group_id = prefs.getString("group_code", "");//"No name defined" is the default value.
+        });
+
+
+
         ImageButton messages=view.findViewById(R.id.messages);
         messages.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,10 +136,7 @@ public class Main extends Fragment {
                 ((Home)getActivity()).selectIndex(2);
             }
         });
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(layoutManager);
-        getInfo();
+
 
     }
 
