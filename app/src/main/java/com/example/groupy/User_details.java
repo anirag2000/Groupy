@@ -6,14 +6,30 @@ public class User_details {
     String email;
     String group_id;
     String photourl;
+    String uid;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
 
-    public User_details(String name_string, String date_string, String email_string, String group_id_string, String photourl) {
+
+
+    public User_details(String name_string, String date_string, String email_string, String group_id_string, String photourl,String uid) {
         this.name = name_string;
         this.date = date_string;
         this.email = email_string;
         this.group_id = group_id_string;
         this.photourl = photourl;
+        this.uid=uid;
+    }
+
+    User_details(){
+
     }
 
     public String getPhotourl() {

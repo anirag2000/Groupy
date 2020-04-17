@@ -185,10 +185,10 @@ if(data!=null) {
                     DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
                     if(final_uri==null)
                     {
-                        user_details = new User_details(name_string, date_string, email_string, group_id_string,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU");
+                        user_details = new User_details(name_string, date_string, email_string, group_id_string,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU",uid);
                     }
                     else{
-                        user_details = new User_details(name_string, date_string, email_string, group_id_string,final_uri);
+                        user_details = new User_details(name_string, date_string, email_string, group_id_string,final_uri,uid);
                     }
 
                     myRef.setValue(user_details);
@@ -220,10 +220,10 @@ if(data!=null) {
                 User_details user_details;
                 if(final_uri==null)
                 {
-                    user_details = new User_details(name_string, date_string, email_string, group_id_string,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU");
+                    user_details = new User_details(name_string, date_string, email_string, group_id_string,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU",uid);
                 }
                 else{
-                    user_details = new User_details(name_string, date_string, email_string, group_id_string,final_uri);
+                    user_details = new User_details(name_string, date_string, email_string, group_id_string,final_uri,uid);
                 }
 
                 myRef.setValue(user_details);

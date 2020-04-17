@@ -13,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Messenger.MessagingActivity"></activity>
         <activity
             android:name=".Home"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>

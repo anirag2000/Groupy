@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Messenger.MessagingActivity">
+
+
+    <androidx.appcompat.widget.Toolbar
+
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/toolbar"
+        android:background="@color/colorPrimary">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/circleimage" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:text="USERNAME"
+            android:textColor="#fff"
+            android:id="@+id/username"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B0B8B8"
+        android:layout_below="@id/toolbar"
+        android:layout_above="@id/typed_message"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:id="@+id/typed_message"
+        android:hint="Type Your Message"
+        android:layout_alignParentBottom="true"/>
+
+    <ImageButton
+        android:layout_width="40dp"
+        android:id="@+id/send"
+        android:background="@drawable/ic_action_name"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="14dp"
+        android:layout_marginBottom="16dp" />
+
+
+</RelativeLayout>
