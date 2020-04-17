@@ -1,6 +1,7 @@
 package com.example.groupy.Messenger;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
     public static final int MSG_TYPE_LEFT=0;
     public static final int MSG_TYPE_RIGHT=1;
-
+    String currentuserphoto;
     private Context mContext;
     private List<Chat> texts;
     private String imageurl;
@@ -74,7 +75,23 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
       reference.addValueEventListener(new ValueEventListener() {
           @Override
           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              String currentuserphoto=dataSnapshot.child("photourl").getValue(String.class);
+             currentuserphoto=dataSnapshot.child("photourl").getValue(String.class);
+
+
+              int type=getItemViewType(position);
+
+              Log.e("This is right image",currentuserphoto);
+
+              if(type==MSG_TYPE_RIGHT){
+                  Glide.with(mContext).load(currentuserphoto).into(holder.rimage);
+              }
+              else {
+                  Glide.with(mContext).load(imageurl).into(holder.image);
+              }
+
+
+
+
           }
 
           @Override
@@ -84,14 +101,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
       });
 
 
-        int type=getItemViewType(position);
 
-        if(type==MSG_TYPE_RIGHT){
-            Glide.with(mContext).load(currentuser).into(holder.rimage);
-        }
-        else {
-            Glide.with(mContext).load(imageurl).into(holder.image);
-        }
 
 
 
