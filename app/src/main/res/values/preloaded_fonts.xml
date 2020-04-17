@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="preloaded_fonts" translatable="false">
+        <item>@font/alex_brush</item>
+        <item>@font/bad_script</item>
         <item>@font/bubbler_one</item>
+        <item>@font/coming_soon</item>
         <item>@font/oxygen_mono</item>
     </array>
 </resources>

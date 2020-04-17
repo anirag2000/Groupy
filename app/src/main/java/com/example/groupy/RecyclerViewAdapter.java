@@ -1,5 +1,6 @@
 package com.example.groupy;
 
+import android.app.Dialog;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -10,11 +11,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import org.w3c.dom.Text;
+
+import java.nio.file.attribute.PosixFileAttributes;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -50,14 +56,28 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .asBitmap()
                 .load(mImageUrls.get(position))
                 .into(holder.image);
-
-        holder.name.setText(mNames.get(position));
+String [] names=mNames.get(position).split(" ");
+        holder.name.setText(names[0]);
 
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: clicked on an image: " + mNames.get(position));
                 Toast.makeText(mContext, mNames.get(position), Toast.LENGTH_SHORT).show();
+                Dialog dialog=new Dialog(mContext);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+                dialog.setContentView(R.layout.dialog);
+                ImageView imageView=dialog.findViewById(R.id.dp);
+                Glide.with(mContext)
+                        .asBitmap()
+                        .load(mImageUrls.get(position))
+                        .into(imageView);
+
+                TextView name=dialog.findViewById(R.id.name);
+                name.setText(mNames.get(position));
+
+                dialog.show();
             }
         });
     }

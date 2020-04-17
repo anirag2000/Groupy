@@ -2,8 +2,13 @@ package com.example.groupy;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,66 +27,59 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
 
-public class Home extends AppCompatActivity {
-    String uid;
-    String group_id;
-    RecyclerView recyclerView;
-    private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> mImageUrls = new ArrayList<>();
+public class Home extends AppCompatActivity  {
 
+    ViewPager viewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        SharedPreferences prefs = getSharedPreferences("group", MODE_PRIVATE);
-        group_id = prefs.getString("group_code", "");//"No name defined" is the default value.
-        Toast.makeText(Home.this, "Kovainagethu" + group_id, Toast.LENGTH_LONG).show();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(Home.this, LinearLayoutManager.HORIZONTAL, false);
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(layoutManager);
-        getInfo();
+
+        viewPager= findViewById(R.id.view_pager);
+        viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+
+
 
     }
+    public void selectIndex(int newIndex) {
+        viewPager.setCurrentItem(newIndex);
+    }
 
-    private void getInfo() {
-
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        ref.child("group").child("group_code").child(group_id).child("ids").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-
-                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    //Toast.makeText(Home.this,"this"+postSnapshot.getValue(String.class),Toast.LENGTH_LONG).show();
-
-
-                    mNames.add(postSnapshot.child("name").getValue(String.class));
-                            mImageUrls.add(postSnapshot.child("photourl").getValue(String.class));
-                            RecyclerViewAdapter adapter = new RecyclerViewAdapter(Home.this, mNames, mImageUrls);
-                            recyclerView.setAdapter(adapter);
+    @Override
+    public void onBackPressed() {
+        int currentPosition = viewPager.getCurrentItem();
+        if (currentPosition != 0) {
+            viewPager.setCurrentItem(0);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 
+}
 
+ class MyPagerAdapter extends FragmentPagerAdapter {
 
+    public MyPagerAdapter(FragmentManager fm) {
+        super(fm);
+    }
 
+    @Override
+    public Fragment getItem(int pos) {
+        switch(pos) {
 
+            case 0: return new Main();
+            case 1: return new Dms();
 
+            default: return null;
+        }
+    }
 
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-
-        });
-
-
-        // initRecyclerView();
-
+    @Override
+    public int getCount() {
+        return 2;
     }
 }
