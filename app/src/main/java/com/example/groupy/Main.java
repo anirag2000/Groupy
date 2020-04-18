@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -42,10 +44,10 @@ public class Main extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    String uid;
+    public String uid;
 
-    String group_id;
-    RecyclerView recyclerView;
+    public String group_id;
+    public RecyclerView recyclerView;
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
 
@@ -75,21 +77,6 @@ public class Main extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentFirebaseUser!= null) {
-          uid=currentFirebaseUser.getUid();
-        } else {
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            startActivity(intent);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,12 +86,32 @@ public class Main extends Fragment {
 
 
 
+
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        FirebaseUser currentuser=FirebaseAuth.getInstance().getCurrentUser();
 
+        uid=currentuser.getUid();
+        Button button=view.findViewById(R.id.notes);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(),NotesMain.class);
+                startActivity(intent);
+            }
+        });
+
+        Log.w("about to  workkkk","");
+        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentFirebaseUser!= null) {
+            uid=currentFirebaseUser.getUid();
+            Log.w("workkkk",uid);
+        } else {
+            Intent intent = new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
+        }
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child("Users").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
@@ -136,7 +143,7 @@ group_id=snapshot.child("group_id").getValue(String.class);
                 ((Home)getActivity()).selectIndex(2);
             }
         });
-
+        super.onViewCreated(view, savedInstanceState);
 
     }
 
