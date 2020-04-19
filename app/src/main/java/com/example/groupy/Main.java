@@ -1,11 +1,14 @@
 package com.example.groupy;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -13,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +54,7 @@ public class Main extends Fragment {
     public RecyclerView recyclerView;
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
+    AlertDialog dialog;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -89,8 +94,13 @@ public class Main extends Fragment {
 
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+       dialog= builder.create();
         FirebaseUser currentuser=FirebaseAuth.getInstance().getCurrentUser();
 
         uid=currentuser.getUid();
@@ -99,6 +109,7 @@ public class Main extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getContext(),NotesMain.class);
+                intent.putExtra("group_code",group_id);
                 startActivity(intent);
             }
         });
@@ -113,6 +124,14 @@ public class Main extends Fragment {
             startActivity(intent);
         }
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        dialog.show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dialog.hide();;
+
+            }
+        },2000);
         ref.child("Users").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {

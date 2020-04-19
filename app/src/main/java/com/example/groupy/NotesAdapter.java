@@ -29,11 +29,13 @@ import java.util.Random;
 class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder> {
     private ArrayList<String> title = new ArrayList<>();
     private ArrayList<String> description = new ArrayList<>();
+    private ArrayList<String> user = new ArrayList<>();
     private Context mContext;
 
-    public NotesAdapter(Context context, ArrayList<String> names, ArrayList<String> imageUrls) {
+    public NotesAdapter(Context context, ArrayList<String> names, ArrayList<String> imageUrls,ArrayList<String> users) {
         title = names;
         description = imageUrls;
+        user=users;
         mContext = context;
     }
     @NonNull
@@ -59,12 +61,18 @@ class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder> {
                 break;
             case 2:
                 viewHolder.parent.setBackgroundResource(R.drawable.notes_layout1);
+                viewHolder.title_tv.setTextColor(mContext.getResources().getColor(R.color.white));
+                viewHolder.description_tv.setTextColor(mContext.getResources().getColor(R.color.white));
+                viewHolder.user_tv.setTextColor(mContext.getResources().getColor(R.color.white));
                 break;
             case 3:
                 viewHolder.parent.setBackgroundResource(R.drawable.notes_layout2);
                 break;
             case 4:
                 viewHolder.parent.setBackgroundResource(R.drawable.notes_layout4);
+                viewHolder.title_tv.setTextColor(mContext.getResources().getColor(R.color.white));
+                viewHolder.description_tv.setTextColor(mContext.getResources().getColor(R.color.white));
+                viewHolder.user_tv.setTextColor(mContext.getResources().getColor(R.color.white));
                 break;
             default:
                 viewHolder.parent.setBackgroundResource(R.drawable.notes_layout5);
@@ -75,6 +83,7 @@ class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder> {
 
         viewHolder.title_tv.setText(title.get(i));
         viewHolder.description_tv.setText(description.get(i));
+        viewHolder.user_tv.setText((user.get(i)));
 
 
     }
@@ -85,13 +94,14 @@ class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder> {
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView title_tv,description_tv;
+        TextView title_tv,description_tv,user_tv;
        ConstraintLayout parent;
         public MyViewHolder(View itemView) {
             super(itemView);
             parent=itemView.findViewById(R.id.parent);
             title_tv=itemView.findViewById(R.id.name);
             description_tv=itemView.findViewById(R.id.age);
+            user_tv=itemView.findViewById(R.id.user);
         }
     }
 }
