@@ -5,12 +5,23 @@ public class Chat {
     String sender;
     String message;
 
-    public Chat(String reciever, String sender, String message) {
+
+
+    String date;
+
+    public Chat(String reciever, String sender, String message,String date) {
         this.reciever = reciever;
         this.sender = sender;
         this.message = message;
+        this.date=date;
+    }
+    public String getDate() {
+        return date;
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
     public Chat() {
     }
 

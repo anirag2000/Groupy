@@ -1,35 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:layout_width="match_parent">
+    android:orientation="vertical"
+    android:paddingEnd="24dp"
+    android:paddingStart="48dp">
 
-    <RelativeLayout
-        android:layout_width="200dp"
+    <LinearLayout
+        android:id="@+id/toUsernameGroup"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/box_right"
-        android:layout_alignParentEnd="true">
+        android:orientation="horizontal"
+        android:layout_gravity="end"
+        android:layout_marginTop="20dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="40dp"
-            android:src="@drawable/ic_launcher_foreground"
-            android:layout_height="40dp"
-            android:id="@+id/rimage"/>
 
         <TextView
             android:id="@+id/textmessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/rimage"
-            android:padding="8dp"
-            android:text="Example Text Here"
-            android:textColor="#57595D" />
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bubble_to"
+            android:maxWidth="350dp"
+            android:paddingLeft="18dp"
+            android:paddingTop="10dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="10dp"
+            android:textColor="#000"
+            tools:text="Lorem ipsum si dolor" />
 
 
-    </RelativeLayout>
-</RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:paddingRight="10dp"
+        android:text="TextView"
+        android:visibility="gone" />
+
+</LinearLayout>

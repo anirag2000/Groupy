@@ -63,7 +63,7 @@ String [] names=mNames.get(position).split(" ");
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: clicked on an image: " + mNames.get(position));
+
                 Toast.makeText(mContext, mNames.get(position), Toast.LENGTH_SHORT).show();
                 Dialog dialog=new Dialog(mContext);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
