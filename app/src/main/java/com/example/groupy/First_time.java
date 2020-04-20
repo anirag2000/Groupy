@@ -196,13 +196,16 @@ if(data!=null) {
                     rootRef.child("group").child("group_code").child(group_id_string).child("ids").child(uid).setValue(user_details);
                     SharedPreferences.Editor editor = getSharedPreferences("group", MODE_PRIVATE).edit();
                     editor.putString("group_code", group_id_string);
+
                     editor.apply();
 
 
 
 
 
-                    Intent intent = new Intent(First_time.this, Home.class);
+                    Intent intent = new Intent(First_time.this, MainActivity.class);
+
+
                     startActivity(intent);
 
 
@@ -233,7 +236,7 @@ if(data!=null) {
                 SharedPreferences.Editor editor = getSharedPreferences("group", MODE_PRIVATE).edit();
                 editor.putString("group_code", group_id_string);
                 editor.apply();
-                Intent intent = new Intent(First_time.this, Home.class);
+                Intent intent = new Intent(First_time.this, MainActivity.class);
                 startActivity(intent);
 
 

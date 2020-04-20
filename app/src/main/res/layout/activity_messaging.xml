@@ -9,23 +9,26 @@
 
     <androidx.appcompat.widget.Toolbar
 
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:id="@+id/toolbar"
-        android:background="@color/colorPrimary">
+        android:background="#FFF8F8">
 
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/circleimage" />
+            android:id="@+id/circleimage"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+
         <TextView
+            android:id="@+id/username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
+            android:fontFamily="sans-serif-medium"
             android:text="USERNAME"
-            android:textColor="#fff"
-            android:id="@+id/username"/>
+            android:textColor="#3A3636"
+            android:textSize="15sp" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -34,9 +37,9 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#B0B8B8"
+        android:layout_above="@id/typed_message"
         android:layout_below="@id/toolbar"
-        android:layout_above="@id/typed_message"/>
+        android:background="#ffffff" />
 
     <EditText
         android:layout_width="match_parent"
