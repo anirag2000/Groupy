@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "451634101696",
+    "firebase_url": "https://groupy-8f7ec.firebaseio.com",
+    "project_id": "groupy-8f7ec",
+    "storage_bucket": "groupy-8f7ec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451634101696:android:e3eae9cdac15a02ee7dc25",
+        "android_client_info": {
+          "package_name": "com.example.groupy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "451634101696-d72mmgbkdqga8q3949133nqh9mvsvti5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.groupy",
+            "certificate_hash": "38aa87ba3b02740008af1d160d87eae4284e2618"
+          }
+        },
+        {
+          "client_id": "451634101696-ruberqso5afopp7en09j99kugm3olegj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.groupy",
+            "certificate_hash": "e8bd0eea7a25c0b926d9ce03d74a61aa14ffedd3"
+          }
+        },
+        {
+          "client_id": "451634101696-ohttjr2krdt6suqna6c46cfosr4n07lg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjOedQepJ3oYypcj6fUhKlopKjWIVJ3Wc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "451634101696-ohttjr2krdt6suqna6c46cfosr4n07lg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
