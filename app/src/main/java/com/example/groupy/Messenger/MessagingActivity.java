@@ -169,6 +169,10 @@ public class MessagingActivity extends AppCompatActivity {
     void sendmessage(String reciever, String from, String message){
 
         reference=database.getReference();
+        message.trim();
+        if(message.isEmpty()){
+            return;
+        }
 
         HashMap<String,Object>hashMap= new HashMap<>();
         hashMap.put("reciever",reciever);
