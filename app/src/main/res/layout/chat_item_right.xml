@@ -4,16 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingEnd="24dp"
+    android:paddingEnd="12dp"
     android:paddingStart="48dp">
 
     <LinearLayout
         android:id="@+id/toUsernameGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_gravity="end"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
 
 
         <TextView
@@ -24,11 +24,11 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/bubble_to"
             android:maxWidth="350dp"
-            android:paddingLeft="18dp"
-            android:paddingTop="10dp"
+            android:paddingLeft="20dp"
+            android:paddingTop="15dp"
             android:paddingRight="18dp"
-            android:paddingBottom="10dp"
-            android:textColor="#000"
+            android:paddingBottom="15dp"
+            android:textColor="#fff"
             tools:text="Lorem ipsum si dolor" />
 
 
