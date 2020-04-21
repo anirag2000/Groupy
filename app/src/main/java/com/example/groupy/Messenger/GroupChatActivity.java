@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -153,26 +154,49 @@ public class GroupChatActivity extends AppCompatActivity {
 
             }
         });
-
-
-        //send the message
-        send.setOnClickListener(new View.OnClickListener() {
+        DatabaseReference temp=FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        temp.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                String typedmessage = message.getText().toString();
-                if (!typedmessage.isEmpty()) {
-                    sendmessage(userid, firebaseUser.getUid(), typedmessage);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentuserphoto=dataSnapshot.child("photourl").getValue(String.class);
+                currentusername=dataSnapshot.child("name").getValue(String.class);
 
-                    //keyboard closing after send
-                    //InputMethodManager inputManager = (InputMethodManager) MessagingActivity.this.getSystemService(MessagingActivity.this.INPUT_METHOD_SERVICE);
-                    //inputManager.hideSoftInputFromWindow(MessagingActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Oops, you can't send empty messages!", Toast.LENGTH_SHORT).show();
-                }
-                message.setText("");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                send.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String typedmessage = message.getText().toString();
+                        if (!typedmessage.isEmpty()) {
+                            sendmessage(userid, firebaseUser.getUid(), typedmessage);
+
+                            //keyboard closing after send
+                            //InputMethodManager inputManager = (InputMethodManager) MessagingActivity.this.getSystemService(MessagingActivity.this.INPUT_METHOD_SERVICE);
+                            //inputManager.hideSoftInputFromWindow(MessagingActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Oops, you can't send empty messages!", Toast.LENGTH_SHORT).show();
+                        }
+                        message.setText("");
+
+                    }
+                });
+
+            }
+        }, 1000);
+
+
+        //send the message
+
 
 
     }
@@ -187,25 +211,20 @@ public class GroupChatActivity extends AppCompatActivity {
             return;
         }
 
-        DatabaseReference temp=FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-        temp.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                currentuserphoto=dataSnapshot.child("photourl").getValue(String.class);
-                currentusername=dataSnapshot.child("name").getValue(String.class);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        GroupChat sendingmessage=new GroupChat();
+        //GroupChat sendingmessage = new GroupChat(mygroup, from,currentuserphoto,message,currentusername,date_string);
 
 
-
-        GroupChat sendingmessage = new GroupChat(mygroup, from,currentuserphoto,message,currentusername,date_string);
+        sendingmessage.setGroup(mygroup);
+        sendingmessage.setSenderphoto(currentuserphoto);
+        sendingmessage.setMessage(message);
+        sendingmessage.setDate(date_string);
+        sendingmessage.setSender(from);
+        sendingmessage.setSentByName(currentusername);
 
         reference.child("GroupChat").push().setValue(sendingmessage);
+
     }
 
     private void readmessages(String currentuser) {

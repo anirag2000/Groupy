@@ -35,6 +35,7 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
     String imageurl;
     String currentuser;
 
+
     FirebaseUser firebaseUser;
 
     public GroupChatAdapter(Context mContext, List<GroupChat> texts, String imageurl, String currentuser) {
@@ -83,18 +84,16 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
 
                 Log.e("This is right image", currentuserphoto);
 
-                if (type == MSG_TYPE_RIGHT && MessagingActivity.right == 0) {
-                    MessagingActivity.right = MessagingActivity.right + 1;
-                    MessagingActivity.left = 0;
+                if (type == MSG_TYPE_RIGHT ) {
+
                     //Glide.with(mContext).load(currentuserphoto).into(holder.rimage);
 
-                } else if (type == MSG_TYPE_LEFT && MessagingActivity.left == 0) {
+                } else if (type == MSG_TYPE_LEFT) {
 
-                    MessagingActivity.left = MessagingActivity.left + 1;
-                    MessagingActivity.right = 0;
+                  
 
 
-                    Glide.with(mContext).load(imageurl).into(holder.image);
+                    Glide.with(mContext).load(chat.getSenderphoto()).into(holder.image);
                 }
 
 
