@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import  androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,14 +46,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MessagingActivity extends AppCompatActivity {
-static int left;
-static int right;
+    static int left;
+    static int right;
     CircleImageView rimage;
     CircleImageView image;
     TextView text;
     Intent intent;
     FirebaseAuth auth;
-    FirebaseDatabase database=FirebaseDatabase.getInstance();
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference reference;
     DatabaseReference temp;
     FirebaseUser firebaseUser;
@@ -62,23 +62,20 @@ static int right;
     EditText message;
 
 
-
     ChatAdapter messageAdapter;
     RecyclerView recyclerView;
-    List<Chat> texts= new ArrayList<>();
-
-
+    List<Chat> texts = new ArrayList<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
-left=0;
-right=0;
+        left = 0;
+        right = 0;
 
         //initialise the toolbar
-        Toolbar toolbar=findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -92,29 +89,29 @@ right=0;
 
         //initialize all the components on screen
         //rimage=findViewById(R.id.rimage);
-        text=findViewById(R.id.username);
-        send=findViewById(R.id.send);
-        message=findViewById(R.id.typed_message);
+        text = findViewById(R.id.username);
+        send = findViewById(R.id.send);
+        message = findViewById(R.id.typed_message);
         //image=findViewById(R.id.circleimage);
 
 
         //whats the receiver's details for the page load
-        firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        intent=getIntent();
+        intent = getIntent();
 
         //loading the messages
 
-        recyclerView=findViewById(R.id.recyclerview);
+        recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager=  new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         //loading the page
-        final String userid=intent.getStringExtra("userid");
-        reference=database.getReference("Users");
-        String currentuser=FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String userid = intent.getStringExtra("userid");
+        reference = database.getReference("Users");
+        String currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -125,11 +122,10 @@ right=0;
                 // Log.e("this is the me",ruser.getName());
 
                 //for the receiver
-                image=findViewById(R.id.circleimage);
-                    text.setText(user.getName());
+                image = findViewById(R.id.circleimage);
+                text.setText(user.getName());
 
-                    Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(image);
-
+                Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(image);
 
 
                 //for the sender
@@ -137,7 +133,7 @@ right=0;
                 //Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(rimage);
 
 
-                readmessages(firebaseUser.getUid(),userid,user.getPhotourl(),currentuser);
+                readmessages(firebaseUser.getUid(), userid, user.getPhotourl(), currentuser);
             }
 
             @Override
@@ -147,23 +143,19 @@ right=0;
         });
 
 
-
-
-
         //send the message
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String typedmessage=message.getText().toString();
-                if(!typedmessage.isEmpty()){
-                    sendmessage(userid,firebaseUser.getUid(),typedmessage);
+                String typedmessage = message.getText().toString();
+                if (!typedmessage.isEmpty()) {
+                    sendmessage(userid, firebaseUser.getUid(), typedmessage);
 
                     //keyboard closing after send
                     InputMethodManager inputManager = (InputMethodManager) MessagingActivity.this.getSystemService(MessagingActivity.this.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(MessagingActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-                }
-                else{
-                    Toast.makeText(MessagingActivity.this,"Oops, you can't send empty messages!",Toast.LENGTH_SHORT).show();
+                    inputManager.hideSoftInputFromWindow(MessagingActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                } else {
+                    Toast.makeText(MessagingActivity.this, "Oops, you can't send empty messages!", Toast.LENGTH_SHORT).show();
                 }
                 message.setText("");
 
@@ -171,54 +163,50 @@ right=0;
         });
 
 
-
-
-
     }
 
 
-
-
-    void sendmessage(String reciever, String from, String message){
+    void sendmessage(String reciever, String from, String message) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        String date_string=dateFormat.format(date); //2016/11/16 12:08:43
-        reference=database.getReference();
+        String date_string = dateFormat.format(date); //2016/11/16 12:08:43
+        reference = database.getReference();
         message.trim();
-        if(message.trim().isEmpty()){
+        if (message.trim().isEmpty()) {
             return;
         }
 
 
-       Chat chat=new Chat(reciever,from,message,date_string);
+        Chat chat = new Chat(reciever, from, message, date_string);
 
         reference.child("Chats").push().setValue(chat);
     }
 
-    private void readmessages(final String sender, final String receiver, final String imageurl,String currentuser){
-        reference=database.getReference("Chats");
+    private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
+        reference = database.getReference("Chats");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 texts.clear();
-                left=0;
-                right=0;
+                left = 0;
+                right = 0;
                 //texts= new ArrayList<>();
-                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
 
                     //if the receiver and sender are the same people we are talking to
-                    Log.e("sample message is ","im here");
-                    if(chat.getSender().equals(sender) && chat.getReciever().equals(receiver)
-                    || chat.getSender().equals(receiver) && chat.getReciever().equals(sender)){
-                       texts.add(chat);
+                    Log.e("sample message is ", "im here");
+                    if (chat.getSender().equals(sender) && chat.getReciever().equals(receiver)
+                            || chat.getSender().equals(receiver) && chat.getReciever().equals(sender) || chat.getReciever().equals(receiver)) {
+                        texts.add(chat);
                     }
                     //The RecyclerView is a new ViewGroup that is prepared to render any adapter-based view in a similar way.
 
+
                 }
 
-                messageAdapter=new ChatAdapter(MessagingActivity.this,texts,imageurl,currentuser);
+                messageAdapter = new ChatAdapter(MessagingActivity.this, texts, imageurl, currentuser);
                 recyclerView.setAdapter(messageAdapter);
 
 
@@ -234,11 +222,12 @@ right=0;
 
 
 }
- class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
+
+class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
 
-    public static final int MSG_TYPE_LEFT=0;
-    public static final int MSG_TYPE_RIGHT=1;
+    public static final int MSG_TYPE_LEFT = 0;
+    public static final int MSG_TYPE_RIGHT = 1;
     String currentuserphoto;
     private Context mContext;
     private List<Chat> texts;
@@ -246,14 +235,13 @@ right=0;
     private String currentuser;
 
     FirebaseUser firebaseUser;
-    ImageView l;
-    ImageView r;
 
-    public ChatAdapter(Context mContext,List<Chat> texts,String imageurl,String currentuser){
-        this.mContext=mContext;
-        this.texts=texts;
-        this.imageurl=imageurl;
-        this.currentuser=currentuser;
+
+    public ChatAdapter(Context mContext, List<Chat> texts, String imageurl, String currentuser) {
+        this.mContext = mContext;
+        this.texts = texts;
+        this.imageurl = imageurl;
+        this.currentuser = currentuser;
         setHasStableIds(true);
 
 
@@ -268,12 +256,11 @@ right=0;
     @Override
     public viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        if(viewType==MSG_TYPE_RIGHT) {
+        if (viewType == MSG_TYPE_RIGHT) {
 
             View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_right, parent, false);
             return new ChatAdapter.viewholder(view);
-        }
-        else{
+        } else {
             View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left, parent, false);
             return new ChatAdapter.viewholder(view);
         }
@@ -285,44 +272,36 @@ right=0;
 
         holder.textmessage.setText(chat.getMessage().trim());
 
-        String time_unformatted=chat.getDate().split(" ")[1];
-        String time_formatted[]=time_unformatted.split(":");
-        holder.date.setText(time_formatted[0]+":"+time_formatted[1]);
+        String time_unformatted = chat.getDate().split(" ")[1];
+        String time_formatted[] = time_unformatted.split(":");
+        holder.date.setText(time_formatted[0] + ":" + time_formatted[1]);
 
 
-
-
-
-
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Users").child(currentuser);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(currentuser);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                currentuserphoto=dataSnapshot.child("photourl").getValue(String.class);
+                currentuserphoto = dataSnapshot.child("photourl").getValue(String.class);
 
 
-                int type=getItemViewType(position);
-                DatabaseReference ref= FirebaseDatabase.getInstance().getReference().child("DP").child(currentuser);
+                int type = getItemViewType(position);
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("DP").child(currentuser);
 
-                Log.e("This is right image",currentuserphoto);
+                Log.e("This is right image", currentuserphoto);
 
-                if(type==MSG_TYPE_RIGHT && MessagingActivity.right==0 ){
-MessagingActivity.right=MessagingActivity.right+1;
-MessagingActivity.left=0;
-//              Glide.with(mContext).load(currentuserphoto).into(holder.rimage);
+                if (type == MSG_TYPE_RIGHT && MessagingActivity.right == 0) {
+                    MessagingActivity.right = MessagingActivity.right + 1;
+                    MessagingActivity.left = 0;
+                    //Glide.with(mContext).load(currentuserphoto).into(holder.rimage);
 
-                }
-                else if(type==MSG_TYPE_LEFT && MessagingActivity.left==0 ){
+                } else if (type == MSG_TYPE_LEFT && MessagingActivity.left == 0) {
 
-                    MessagingActivity.left=MessagingActivity.left+1;
-                    MessagingActivity.right=0;
+                    MessagingActivity.left = MessagingActivity.left + 1;
+                    MessagingActivity.right = 0;
 
 
                     Glide.with(mContext).load(imageurl).into(holder.image);
                 }
-
-
-
 
 
             }
@@ -332,8 +311,6 @@ MessagingActivity.left=0;
 
             }
         });
-
-
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -349,10 +326,8 @@ MessagingActivity.left=0;
                 }, 1000);
 
 
-
             }
         });
-
 
 
     }
@@ -373,7 +348,7 @@ MessagingActivity.left=0;
             textmessage = itemView.findViewById(R.id.textmessage);
             image = itemView.findViewById(R.id.circleimage);
             //image=itemView.findViewById(R.id.rimage);
-            date=itemView.findViewById(R.id.date);
+            date = itemView.findViewById(R.id.date);
             date.setVisibility(View.GONE);
 
         }
@@ -382,11 +357,10 @@ MessagingActivity.left=0;
 
     @Override
     public int getItemViewType(int position) {
-        firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
-        if(texts.get(position).getSender().equals(firebaseUser.getUid())){
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (texts.get(position).getSender().equals(firebaseUser.getUid())) {
             return MSG_TYPE_RIGHT;
-        }
-        else {
+        } else {
             return MSG_TYPE_LEFT;
         }
 

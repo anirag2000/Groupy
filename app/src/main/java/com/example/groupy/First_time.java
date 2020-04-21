@@ -59,7 +59,7 @@ public class First_time extends AppCompatActivity {
         imageview = findViewById(R.id.imageView4);
         imageview.setVisibility(View.INVISIBLE);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        profilepic=findViewById(R.id.profilepic);
+        profilepic = findViewById(R.id.profilepic);
         profilepic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,6 +68,7 @@ public class First_time extends AppCompatActivity {
                         .start(First_time.this);
             }
         });
+
 
         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -90,6 +91,8 @@ public class First_time extends AppCompatActivity {
 
             }
 
+
+            //for the group entered if correct
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -103,6 +106,7 @@ public class First_time extends AppCompatActivity {
                             imageview.setImageResource(R.drawable.yes);
                         } else {
                             group_exists = false;
+
                             imageview.setVisibility(View.VISIBLE);
                             imageview.setImageResource(R.drawable.no);
 
@@ -121,31 +125,36 @@ public class First_time extends AppCompatActivity {
 
     }
 
+
+    //storing the image
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
 
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            Toast.makeText(First_time.this, "Bella ciao", Toast.LENGTH_LONG).show();
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri Result_uri = result.getUri();
 
-            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-                Toast.makeText(First_time.this,"Bella ciao",Toast.LENGTH_LONG).show();
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                if(resultCode==RESULT_OK) {
-                    Uri Result_uri = result.getUri();
-
-                    final StorageReference ref = mStorageRef.child(uid).child("picture.jpg");
-                    ref.putFile(Result_uri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                  downloadUrl = uri;
-                        final_uri=uri.toString();
-Toast.makeText(First_time.this,"bella ciao part2",Toast.LENGTH_LONG).show();
-if(data!=null) {
-    profilepic.setImageURI(Result_uri);
-}
-                    }));
-                }}
+                final StorageReference ref = mStorageRef.child(uid).child("picture.jpg");
+                ref.putFile(Result_uri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                    downloadUrl = uri;
+                    final_uri = uri.toString();
+                    Toast.makeText(First_time.this, "bella ciao part2", Toast.LENGTH_LONG).show();
+                    if (data != null) {
+                        profilepic.setImageURI(Result_uri);
+                    }
+                }));
+            }
+        }
 
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    //signout
 
     @Override
     protected void onStop() {
@@ -155,7 +164,7 @@ if(data!=null) {
 
     }
 
-
+//make the user
     public void register(View view) {
         EditText name = findViewById(R.id.name);
         EditText email = findViewById(R.id.date);
@@ -168,10 +177,12 @@ if(data!=null) {
         group_id_string = group_id.getText().toString();
 
         if (!name_string.isEmpty() && !date_string.isEmpty() && !email_string.isEmpty()) {
+            //checking is all are entered
             fields_valid = true;
         }
         if (!group_id_string.isEmpty()) {
             group_code_exists = true;
+
         }
 
 
@@ -181,14 +192,14 @@ if(data!=null) {
             if (group_code_exists) {
                 if (group_exists) {
 
+                    //if the group entered was correct
+
                     User_details user_details;
                     DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
-                    if(final_uri==null)
-                    {
-                        user_details = new User_details(name_string, date_string, email_string, group_id_string,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU",uid);
-                    }
-                    else{
-                        user_details = new User_details(name_string, date_string, email_string, group_id_string,final_uri,uid);
+                    if (final_uri == null) {
+                        user_details = new User_details(name_string, date_string, email_string, group_id_string, "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU", uid);
+                    } else {
+                        user_details = new User_details(name_string, date_string, email_string, group_id_string, final_uri, uid);
                     }
 
                     myRef.setValue(user_details);
@@ -198,9 +209,6 @@ if(data!=null) {
                     editor.putString("group_code", group_id_string);
 
                     editor.apply();
-
-
-
 
 
                     Intent intent = new Intent(First_time.this, MainActivity.class);
@@ -214,25 +222,49 @@ if(data!=null) {
                 }
             } else {
 
+                //for a new user without a group
 
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("Users").child(uid);
+                DatabaseReference myRef = database.getReference("Users").child(uid); //the created users fields in firebase
                 RandomString randomString = new RandomString();
-                group_id_string = randomString.generate();
+                group_id_string = randomString.generate(); //the group id the user will have
+
+                //making the group as an User
+
+                User_details group= new User_details("My Group",date_string,"groupemaildoesntexist@email.com",group_id_string
+                        ,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU",group_id_string);
+
+
+
+
+
+
+
+
                 User_details user_details;
-                if(final_uri==null)
-                {
-                    user_details = new User_details(name_string, date_string, email_string, group_id_string,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU",uid);
-                }
-                else{
-                    user_details = new User_details(name_string, date_string, email_string, group_id_string,final_uri,uid);
+                if (final_uri == null) {
+                    //if the photo wasnt added
+                    user_details = new User_details(name_string, date_string, email_string, group_id_string,
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU", uid);
+                } else {
+                    //the photo was added
+                    user_details = new User_details(name_string, date_string, email_string, group_id_string, final_uri, uid);
                 }
 
                 myRef.setValue(user_details);
 
                 Toast.makeText(First_time.this, group_id_string, Toast.LENGTH_LONG).show();
+
+                //adding user and group
                 rootRef.child("group").child("group_code").child(group_id_string).child("ids").child(uid).setValue(user_details);
+                rootRef.child("group").child("group_code").child(group_id_string).child("ids").child(group_id_string).setValue(group);
+                rootRef.child("Users").child(group_id_string).setValue(group);
+                rootRef.child("Users").child(uid).setValue(user_details);
+
+
+
+
                 SharedPreferences.Editor editor = getSharedPreferences("group", MODE_PRIVATE).edit();
                 editor.putString("group_code", group_id_string);
                 editor.apply();
