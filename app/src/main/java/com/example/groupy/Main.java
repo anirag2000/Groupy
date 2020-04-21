@@ -171,6 +171,7 @@ group_id=snapshot.child("group_id").getValue(String.class);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child("group").child("group_code").child(group_id).child("ids").addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
