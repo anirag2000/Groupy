@@ -94,7 +94,7 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
                     MessagingActivity.right = 0;
 
 
-                    Glide.with(mContext).load(imageurl).into(holder.image);
+                    Glide.with(mContext).load(GroupChatActivity.imageurl).into(holder.image);
                 }
 
 
