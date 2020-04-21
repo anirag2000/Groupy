@@ -39,7 +39,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class GroupChatActivity extends AppCompatActivity {
     static int left;
     static int right;
-    static String imageurl;
     CircleImageView rimage;
     CircleImageView image;
     TextView text;
@@ -239,7 +238,8 @@ public class GroupChatActivity extends AppCompatActivity {
 
 
                         GroupChat alltexts = snapshot.getValue(GroupChat.class);
-                        imageurl=snapshot.child("senderphoto").getValue(String.class);
+                        String imageurl=snapshot.child("senderphoto").getValue(String.class);
+
 
 
                         if(alltexts.getGroup().equals(mygroup)) {
