@@ -198,7 +198,7 @@ public class MessagingActivity extends AppCompatActivity {
                     //if the receiver and sender are the same people we are talking to
                     Log.e("sample message is ", "im here");
                     if (chat.getSender().equals(sender) && chat.getReciever().equals(receiver)
-                            || chat.getSender().equals(receiver) && chat.getReciever().equals(sender) || chat.getReciever().equals(receiver)) {
+                            || chat.getSender().equals(receiver) && chat.getReciever().equals(sender)) {
                         texts.add(chat);
                     }
                     //The RecyclerView is a new ViewGroup that is prepared to render any adapter-based view in a similar way.
@@ -243,8 +243,6 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
         this.imageurl = imageurl;
         this.currentuser = currentuser;
         setHasStableIds(true);
-
-
     }
 
     @Override

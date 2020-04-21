@@ -7,6 +7,7 @@ public class Chat {
 
 
 
+
     String date;
 
     public Chat(String reciever, String sender, String message,String date) {

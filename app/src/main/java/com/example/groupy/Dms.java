@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.groupy.Messenger.GroupChatActivity;
 import com.example.groupy.Messenger.MessagingActivity;
 import com.example.groupy.Messenger.UserAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,7 +64,7 @@ public class Dms extends Fragment { //Nothing But displaying all users
         groupchat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent go= new Intent(getContext(), MessagingActivity.class);
+                Intent go= new Intent(getContext(), GroupChatActivity.class);
                 go.putExtra("userid",group_id);
 
                 startActivity(go);
