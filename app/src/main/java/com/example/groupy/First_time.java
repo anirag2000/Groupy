@@ -232,8 +232,8 @@ public class First_time extends AppCompatActivity {
 
                 //making the group as an User
 
-//                User_details group= new User_details("My Group",date_string,"groupemaildoesntexist@email.com",group_id_string
-//                        ,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU",group_id_string);
+                User_details group= new User_details("My Group",date_string,"groupemaildoesntexist@email.com",group_id_string
+                        ,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU",group_id_string);
 
 
 
@@ -258,8 +258,8 @@ public class First_time extends AppCompatActivity {
 
                 //adding user and group
                 rootRef.child("group").child("group_code").child(group_id_string).child("ids").child(uid).setValue(user_details);
-                //rootRef.child("group").child("group_code").child(group_id_string).child("ids").child(group_id_string).setValue(group);
-                //rootRef.child("Users").child(group_id_string).setValue(group);
+                rootRef.child("group").child("group_code").child(group_id_string).child("ids").child(group_id_string).setValue(group);
+                rootRef.child("Users").child(group_id_string).setValue(group);
                 rootRef.child("Users").child(uid).setValue(user_details);
 
 
