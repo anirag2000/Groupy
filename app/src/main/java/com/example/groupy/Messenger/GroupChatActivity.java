@@ -233,6 +233,7 @@ public class GroupChatActivity extends AppCompatActivity {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                texts.clear();
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
 
 

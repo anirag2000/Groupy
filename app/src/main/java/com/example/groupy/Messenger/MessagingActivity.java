@@ -187,6 +187,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
+
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 texts.clear();
                 left = 0;
