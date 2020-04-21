@@ -147,8 +147,8 @@ public class MessagingActivity extends AppCompatActivity {
                     sendmessage(userid,firebaseUser.getUid(),typedmessage);
 
                     //keyboard closing after send
-                    InputMethodManager inputManager = (InputMethodManager) MessagingActivity.this.getSystemService(MessagingActivity.this.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(MessagingActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+//                    InputMethodManager inputManager = (InputMethodManager) MessagingActivity.this.getSystemService(MessagingActivity.this.INPUT_METHOD_SERVICE);
+//                    inputManager.hideSoftInputFromWindow(MessagingActivity.this.getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
                 }
                 else{
                     Toast.makeText(MessagingActivity.this,"Oops, you can't send empty messages!",Toast.LENGTH_SHORT).show();
@@ -170,7 +170,8 @@ public class MessagingActivity extends AppCompatActivity {
 
         reference=database.getReference();
         message.trim();
-        if(message.isEmpty()){
+        Log.e("the message",message);
+        if(message.trim().isEmpty()){
             return;
         }
 

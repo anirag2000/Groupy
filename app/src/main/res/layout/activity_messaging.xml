@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+
     android:layout_height="match_parent"
     tools:context=".Messenger.MessagingActivity">
 
@@ -38,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/typed_message"
+        android:backgroundTint="#777070"
         android:layout_below="@id/toolbar"
         android:background="#ffffff" />
 

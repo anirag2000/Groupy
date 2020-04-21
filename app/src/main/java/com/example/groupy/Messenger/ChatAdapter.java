@@ -26,6 +26,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
+    int right=0;
+    int left=0;
+    int temp=0;
+
 
     public static final int MSG_TYPE_LEFT=0;
     public static final int MSG_TYPE_RIGHT=1;
@@ -68,37 +72,51 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
     @Override
     public void onBindViewHolder(@NonNull viewholder holder, int position) {
         final Chat chat = texts.get(position);
-
-        holder.textmessage.setText(chat.getMessage());
-
-      DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Users").child(currentuser);
-      reference.addValueEventListener(new ValueEventListener() {
-          @Override
-          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-             currentuserphoto=dataSnapshot.child("photourl").getValue(String.class);
-
-
-              int type=getItemViewType(position);
-
-              Log.e("This is right image",currentuserphoto);
-
-              if(type==MSG_TYPE_RIGHT){
-                  Glide.with(mContext).load(currentuserphoto).into(holder.rimage);
-              }
-              else {
-                  Glide.with(mContext).load(imageurl).into(holder.image);
-              }
+        if (!chat.getMessage().trim().isEmpty()) {
+            holder.textmessage.setText(chat.getMessage().trim());
+        }
+        int type = getItemViewType(position);
+        if (type == MSG_TYPE_RIGHT && right == 0) {
+            temp = 1;
+            right++;
+            left = 0;
+        } else if (type == MSG_TYPE_LEFT && left == 0) {
+            temp = 1;
+            left++;
+            right = 0;
+        }
 
 
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(currentuser);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentuserphoto = dataSnapshot.child("photourl").getValue(String.class);
 
 
-          }
 
-          @Override
-          public void onCancelled(@NonNull DatabaseError databaseError) {
 
-          }
-      });
+                Log.e("This is right image", currentuserphoto);
+
+                if (type == MSG_TYPE_RIGHT && temp == 1) {
+                    Glide.with(mContext).load(currentuserphoto).into(holder.rimage);
+
+                } else if (type == MSG_TYPE_LEFT && temp == 1)
+                    Glide.with(mContext).load(imageurl).into(holder.image);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
+
+
+
+
+
 
 
 

@@ -1,8 +1,10 @@
 package com.example.groupy;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.groupy.Messenger.MessagingActivity;
 import com.example.groupy.Messenger.UserAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,20 +31,49 @@ public class Dms extends Fragment { //Nothing But displaying all users
 
     RecyclerView recyclerView;
     UserAdapter userAdapter;
-    List<User_details> mUsers;
-
+    List<User_details> mUsers= new ArrayList<>();
+    ConstraintLayout groupchat;
+    String group_id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         View view = inflater.inflate(R.layout.fragment_dms, container, false);
+
+
+        groupchat=view.findViewById(R.id.groupchat);
+        FirebaseUser firebaseUser =FirebaseAuth.getInstance().getCurrentUser();
+        String user=firebaseUser.getUid();
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference("Users").child(user);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                group_id=dataSnapshot.child("group_id").getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+       // groupchat=view.findViewById(R.id.groupchat);
+        groupchat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent go= new Intent(getContext(), MessagingActivity.class);
+                go.putExtra("userid",group_id);
+
+                startActivity(go);
+            }
+        });
 
         recyclerView=view.findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mUsers= new ArrayList<>();
+
 
         readUsers();
 
