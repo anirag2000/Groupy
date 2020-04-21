@@ -70,17 +70,19 @@
             tools:layout_editor_absoluteY="10dp" />
 
         <TextView
-            android:layout_width="125dp"
-            android:layout_height="24dp"
+            android:id="@+id/username2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="Group Chat"
+            android:layout_marginStart="30dp"
+            android:layout_toRightOf="@id/rightimage"
+            android:fontFamily="@font/andika"
+            android:gravity="center"
+            android:text="Hello World"
             android:textColor="#322B2B"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.328"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/circleImageView"
+            tools:layout_editor_absoluteY="20dp" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

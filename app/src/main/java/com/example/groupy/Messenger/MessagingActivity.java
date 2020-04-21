@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.bumptech.glide.Glide;
+import com.example.groupy.Home;
 import com.example.groupy.User_details;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +41,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.example.groupy.R;
 
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -78,17 +83,6 @@ public class MessagingActivity extends AppCompatActivity {
         left = 0;
         right = 0;
 
-        //initialise the toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
 
         //initialize all the components on screen
@@ -104,7 +98,11 @@ public class MessagingActivity extends AppCompatActivity {
 
         intent = getIntent();
 
-        //loading the messages
+
+
+
+
+
 
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
@@ -139,7 +137,7 @@ public class MessagingActivity extends AppCompatActivity {
 
                 messageAdapter = new ChatAdapter(MessagingActivity.this, texts, user.getPhotourl(), currentuser);
                 recyclerView.setAdapter(messageAdapter);
-
+                recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
                 readmessages(firebaseUser.getUid(), userid, user.getPhotourl(), currentuser);
             }
 
@@ -170,6 +168,39 @@ public class MessagingActivity extends AppCompatActivity {
 
             }
         });
+        LinearLayout linearLayout=findViewById(R.id.linearLayout2);
+        linearLayout.setBackgroundResource(R.drawable.red);
+         reference=FirebaseDatabase.getInstance().getReference().child("online_statuses");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(userid))
+                {
+                    if(dataSnapshot.child(userid).getValue(String.class).equals("online"))
+                    {
+                        linearLayout.setBackgroundResource(R.drawable.green);
+                    }
+                    else
+                    {
+                        linearLayout.setBackgroundResource(R.drawable.red);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        KeyboardVisibilityEvent.setEventListener(
+               this,
+                (KeyboardVisibilityEventListener) isOpen -> {
+                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+
+
+                });
 
 
 DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
@@ -241,6 +272,7 @@ message.addTextChangedListener(new TextWatcher() {
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
         recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
+        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
 
 
         reference.addChildEventListener(new ChildEventListener() {
@@ -257,7 +289,7 @@ message.addTextChangedListener(new TextWatcher() {
                     texts.add(chat);
                    //
                     messageAdapter.notifyDataSetChanged();
-                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()-1);
+                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
 
 
 
@@ -294,10 +326,12 @@ message.addTextChangedListener(new TextWatcher() {
             }
         });
 
+        }
+
     }
 
 
-}
+
 
 class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
