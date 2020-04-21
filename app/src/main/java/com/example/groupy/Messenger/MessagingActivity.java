@@ -1,6 +1,7 @@
 package com.example.groupy.Messenger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -27,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.example.groupy.User_details;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -108,6 +110,7 @@ public class MessagingActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+
         //loading the page
         final String userid = intent.getStringExtra("userid");
         reference = database.getReference("Users");
@@ -132,6 +135,8 @@ public class MessagingActivity extends AppCompatActivity {
                 // Log.e("this is the photourl",user.getPhotourl());
                 //Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(rimage);
 
+                messageAdapter = new ChatAdapter(MessagingActivity.this, texts, user.getPhotourl(), currentuser);
+                recyclerView.setAdapter(messageAdapter);
 
                 readmessages(firebaseUser.getUid(), userid, user.getPhotourl(), currentuser);
             }
@@ -152,8 +157,7 @@ public class MessagingActivity extends AppCompatActivity {
                     sendmessage(userid, firebaseUser.getUid(), typedmessage);
 
                     //keyboard closing after send
-                    InputMethodManager inputManager = (InputMethodManager) MessagingActivity.this.getSystemService(MessagingActivity.this.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(MessagingActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
                 } else {
                     Toast.makeText(MessagingActivity.this, "Oops, you can't send empty messages!", Toast.LENGTH_SHORT).show();
                 }
@@ -183,35 +187,54 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
+        recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
 
-        reference.addValueEventListener(new ValueEventListener() {
+
+        reference.addChildEventListener(new ChildEventListener() {
             @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Chat chat = dataSnapshot.getValue(Chat.class);
 
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                texts.clear();
-                left = 0;
-                right = 0;
-                //texts= new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
 
-                    //if the receiver and sender are the same people we are talking to
-                    Log.e("sample message is ", "im here");
-                    if (chat.getSender().equals(sender) && chat.getReciever().equals(receiver)
-                            || chat.getSender().equals(receiver) && chat.getReciever().equals(sender)) {
-                        texts.add(chat);
-                    }
-                    //The RecyclerView is a new ViewGroup that is prepared to render any adapter-based view in a similar way.
+                //if the receiver and sender are the same people we are talking to
+                Log.e("sample message is ", "im here");
+
+                if (chat.getSender().equals(sender) && chat.getReciever().equals(receiver)
+                        || chat.getSender().equals(receiver) && chat.getReciever().equals(sender)) {
+                    texts.add(chat);
+                   //
+                    messageAdapter.notifyDataSetChanged();
+                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()-1);
+
+
+
+
 
 
                 }
 
-                messageAdapter = new ChatAdapter(MessagingActivity.this, texts, imageurl, currentuser);
-                recyclerView.setAdapter(messageAdapter);
 
+
+                //The RecyclerView is a new ViewGroup that is prepared to render any adapter-based view in a similar way.
+            }
+
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
