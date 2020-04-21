@@ -174,6 +174,8 @@ group_id=snapshot.child("group_id").getValue(String.class);
 
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                mNames.clear();
+                mImageUrls.clear();
 
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     //Toast.makeText(Home.this,"this"+postSnapshot.getValue(String.class),Toast.LENGTH_LONG).show();
