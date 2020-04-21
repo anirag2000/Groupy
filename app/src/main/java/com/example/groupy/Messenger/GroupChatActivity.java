@@ -221,7 +221,7 @@ public class GroupChatActivity extends AppCompatActivity {
                         GroupChat alltexts = snapshot.getValue(GroupChat.class);
                         String imageurl=snapshot.child("senderphoto").getValue(String.class);
 
-                        
+
 
                         if(alltexts.getGroup().equals(mygroup)) {
                             texts.add(alltexts);
