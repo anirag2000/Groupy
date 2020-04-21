@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -146,8 +148,58 @@ public class MessagingActivity extends AppCompatActivity {
 
             }
         });
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
+        reference.child("AddDetails").child(currentuser).child(userid).child("Typing").setValue("0");
+        reference.child("AddDetails").child(currentuser).child(userid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Typing").getValue(String.class).equals("1"))
+                {
+                    TextView typing=findViewById(R.id.typing);
+                    typing.setVisibility(View.VISIBLE);
+                }
+                if(dataSnapshot.child("Typing").getValue(String.class).equals("0"))
+                {
+                    TextView typing=findViewById(R.id.typing);
+                    typing.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
+DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
+message.addTextChangedListener(new TextWatcher() {
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("1");
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("0");
+            }
+        }, 4000);
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+
+
+    }
+});
         //send the message
         send.setOnClickListener(new View.OnClickListener() {
             @Override
