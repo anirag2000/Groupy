@@ -229,8 +229,10 @@ public class GroupChatActivity extends AppCompatActivity {
 
     private void readmessages(String currentuser) {
         reference = database.getReference("GroupChat");
-        texts.clear();
+       // texts.clear();
+
         reference.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 texts.clear();
@@ -239,19 +241,22 @@ public class GroupChatActivity extends AppCompatActivity {
 
 
                         GroupChat alltexts = snapshot.getValue(GroupChat.class);
-                        String imageurl=snapshot.child("senderphoto").getValue(String.class);
+                       // imageurl=snapshot.child("senderphoto").getValue(String.class);
 
 
 
                         if(alltexts.getGroup().equals(mygroup)) {
                             texts.add(alltexts);
-                            messageAdapter = new GroupChatAdapter(GroupChatActivity.this, texts, imageurl, currentuser);
-                            recyclerView.setAdapter(messageAdapter);
+
 
                         }
 
 
+
                 }
+                messageAdapter = new GroupChatAdapter(GroupChatActivity.this, texts, "example", currentuser);
+                recyclerView.setAdapter(messageAdapter);
+             //   texts.clear();
 
             }
 
