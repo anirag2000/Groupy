@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -137,7 +138,7 @@ public class MessagingActivity extends AppCompatActivity {
 
                 messageAdapter = new ChatAdapter(MessagingActivity.this, texts, user.getPhotourl(), currentuser);
                 recyclerView.setAdapter(messageAdapter);
-                recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+
                 readmessages(firebaseUser.getUid(), userid, user.getPhotourl(), currentuser);
             }
 
@@ -327,6 +328,15 @@ message.addTextChangedListener(new TextWatcher() {
         });
 
         }
+        @Override
+    public void onBackPressed()
+        {
+            super.onBackPressed();
+            supportFinishAfterTransition();
+            ActivityCompat.postponeEnterTransition(this);
+            ActivityCompat.startPostponedEnterTransition(MessagingActivity.this);
+        }
+
 
     }
 
