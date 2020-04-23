@@ -350,7 +350,7 @@ message.addTextChangedListener(new TextWatcher() {
         intent = getIntent();
         String userid=intent.getStringExtra("userid");
 
-        userpic.child(userid).child("photourl").addValueEventListener(new ValueEventListener() {
+        userpic.child(firebaseUser.getUid()).child("photourl").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userpicurl=dataSnapshot.getValue(String.class);
