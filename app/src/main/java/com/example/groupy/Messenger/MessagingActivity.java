@@ -85,10 +85,10 @@ public class MessagingActivity extends AppCompatActivity {
     ImageButton send;
     EditText message;
     String token;
+ String userpicurl;
 
     APIService apiService;
     boolean notify=false;
-    String userpicurl;
 
     ChatAdapter messageAdapter;
     RecyclerView recyclerView;
@@ -363,18 +363,12 @@ message.addTextChangedListener(new TextWatcher() {
         });
 
 
-
-
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Token token = snapshot.getValue(Token.class);
-
-
-
-
-                    Data data = new Data(firebaseUser.getUid(),userpicurl, username+": "+message, "New Message",
+                    Data data = new Data(firebaseUser.getUid(),userpicurl, message, username,
                             userid);
 
                     Sender sender = new Sender(data, token.getToken());

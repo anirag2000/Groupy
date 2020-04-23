@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.groupy.R;
 
 public class OreoNotifications extends ContextWrapper {
 
@@ -57,8 +58,8 @@ public class OreoNotifications extends ContextWrapper {
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    public  void getBitMap(String title, String body,
-                                                     PendingIntent pendingIntent, Uri soundUri, String icon){
+    public void  getOreoNotification(String title, String body,
+                                                     PendingIntent pendingIntent, Uri soundUri, String icon,int j){
 
         final Bitmap[] bitmap = {null};
 
@@ -71,8 +72,8 @@ public class OreoNotifications extends ContextWrapper {
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
 
                         bitmap[0] = resource;
-                        // TODO Do some work: pass this bitmap
-                        displayImageNotification()
+
+displayImageNotification(bitmap[0],title,body,pendingIntent,soundUri,j);
 
                     }
 
@@ -83,22 +84,42 @@ public class OreoNotifications extends ContextWrapper {
 
     }
 
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private Notification.Builder displayImageNotification(Bitmap bitmap, String title, String body, PendingIntent pendingintent,
-                                                          Uri soundUri) {
+    private void displayImageNotification(Bitmap bitmap, String title, String body, PendingIntent pendingIntent, Uri soundUri, int j) {
 
-        return new Notification.Builder(getApplicationContext(), CHANNEL_ID)
-                .setContentIntent(pendingintent)
+        Notification.Builder builder=new Notification.Builder(getApplicationContext(), CHANNEL_ID)
+                .setContentIntent(pendingIntent)
                 .setContentTitle(title)
                 .setContentText(body)
+                .setSmallIcon(R.drawable.chat)
                 .setLargeIcon(bitmap)
                 .setSound(soundUri)
                 .setAutoCancel(true);
+        int i=0;
+        if(j>0)
+        {
+            i=j;
+        }
 
-
+        getManager().notify(i, builder.build());
     }
+
+
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    private void  displayImageNotification(Bitmap bitmap, String title, String body, PendingIntent pendingintent, Uri soundUri) {
+//
+//        return new Notification.Builder(getApplicationContext(), CHANNEL_ID)
+//                .setContentIntent(pendingintent)
+//                .setContentTitle(title)
+//                .setContentText(body)
+//                .setLargeIcon(bitmap)
+//                .setSound(soundUri)
+//                .setAutoCancel(true);
+//
+//        oreoNotification.getManager().notify(i, builder.build());
+//
+//
+//
+//    }
 
 }

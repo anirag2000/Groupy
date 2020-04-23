@@ -73,15 +73,11 @@ int j;
         Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         OreoNotifications oreoNotification = new OreoNotifications(this);
-        Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
-                defaultSound, icon);
+         oreoNotification.getOreoNotification(title, body, pendingIntent,
+                defaultSound, icon,j);
 
-        int i = 0;
-        if (j > 0) {
-            i = j;
-        }
 
-        oreoNotification.getManager().notify(i, builder.build());
+
 
     }
 
@@ -136,7 +132,7 @@ getBitmapAsyncAndDoWork(icon,title,body,pendingIntent);
                 .setContentTitle(title)
                 .setContentText(body)
                 .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.chat)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
                 .setAutoCancel(true)
