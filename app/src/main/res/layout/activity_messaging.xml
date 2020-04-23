@@ -99,12 +99,14 @@
 
     <EditText
         android:id="@+id/typed_message"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginBottom="11dp"
+        android:background="@drawable/sendmessagebox"
         android:hint="Type Your Message"
-        android:padding="20dp" />
+        android:padding="8dp" />
 
     <ImageButton
         android:id="@+id/send"

@@ -36,7 +36,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.groupy.Home;
+import com.example.groupy.Service.MyFirebaseIdService;
+import com.example.groupy.Service.Token;
 import com.example.groupy.User_details;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -47,6 +50,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import com.example.groupy.R;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -72,16 +77,21 @@ public class MessagingActivity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference reference;
     DatabaseReference temp;
-    FirebaseUser firebaseUser;
+    FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
 
     ImageButton send;
     EditText message;
-
+    String token;
 
     ChatAdapter messageAdapter;
     RecyclerView recyclerView;
     List<Chat> texts = new ArrayList<>();
 
+    public void updateToken(String token){
+        DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference("Tokens");
+        Token obj = new Token(token);
+        databaseReference.child(firebaseUser.getUid()).setValue(obj);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +99,15 @@ public class MessagingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messaging);
         left = 0;
         right = 0;
+
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(MessagingActivity.this, instanceIdResult -> {
+            token = instanceIdResult.getToken();
+            Log.e("This is the token",token);
+            updateToken(token);
+        });
+
+
 
 
 

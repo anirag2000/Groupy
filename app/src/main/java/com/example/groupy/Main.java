@@ -167,38 +167,25 @@ group_id=snapshot.child("group_id").getValue(String.class);
     }
 
     private void getInfo() {
-
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child("group").child("group_code").child(group_id).child("ids").addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-
+                mNames.clear();
+                mImageUrls.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     //Toast.makeText(Home.this,"this"+postSnapshot.getValue(String.class),Toast.LENGTH_LONG).show();
-
-
                     mNames.add(postSnapshot.child("name").getValue(String.class));
                     mImageUrls.add(postSnapshot.child("photourl").getValue(String.class));
                     RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mNames, mImageUrls);
                     recyclerView.setAdapter(adapter);
-
-
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
-
-
         });
-
-
         // initRecyclerView();
-
     }
 
 
