@@ -51,6 +51,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.example.groupy.R;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.twitter.sdk.android.core.models.User;
 
 
@@ -62,7 +63,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
+import dagger.multibindings.ElementsIntoSet;
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -86,6 +91,8 @@ public class MessagingActivity extends AppCompatActivity {
     EditText message;
     String token;
  String userpicurl;
+ Timer timer;
+    long DELAY;
 
     APIService apiService;
     boolean notify=false;
@@ -237,35 +244,40 @@ public class MessagingActivity extends AppCompatActivity {
 
                 });
 
-
-DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
-message.addTextChangedListener(new TextWatcher() {
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("1");
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
+         timer = new Timer();
+         DELAY = 1000; // in ms
+       message.addTextChangedListener(new TextWatcher() {
             @Override
-            public void run() {
-
-                databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("0");
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
             }
-        }, 4000);
+            @Override
+            public void onTextChanged(final CharSequence s, int start, int before,
+                                      int count) {
+                databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("1");
+                if(timer != null)
+                    timer.cancel();
+            }
+            @Override
+            public void afterTextChanged(final Editable s) {
+                //avoid triggering event when text is too short
+                if (s.length() >= 3) {
 
-    }
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            // TODO: do what you need here (refresh list)
+                            databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("0");
 
-    @Override
-    public void afterTextChanged(Editable s) {
+                        }
 
+                    }, DELAY);
+                }
+            }
+        });
 
-
-    }
-});
         //send the message
         send.setOnClickListener(new View.OnClickListener() {
             @Override
