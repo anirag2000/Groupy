@@ -24,10 +24,7 @@ import com.google.firebase.messaging.RemoteMessage;
 public class MyFirebaseMessaging extends FirebaseMessagingService {
 
     @Override
-    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-
-
-        Log.e("this is remote message",remoteMessage.toString());
+    public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
         String sented = remoteMessage.getData().get("sented");
@@ -38,12 +35,17 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (firebaseUser != null && sented.equals(firebaseUser.getUid())) {
+        if (firebaseUser != null && sented.equals(firebaseUser.getUid())){
             if (!currentUser.equals(user)) {
-                sendOreoNotification(remoteMessage);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    sendOreoNotification(remoteMessage);
+                } else {
+                    sendNotification(remoteMessage);
+                }
             }
         }
     }
+
 
 
     private void sendOreoNotification(RemoteMessage remoteMessage) {
@@ -75,7 +77,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
     }
 
-  /*  private void sendNotification(RemoteMessage remoteMessage) {
+    private void sendNotification(RemoteMessage remoteMessage) {
 
         String user = remoteMessage.getData().get("user");
         String icon = remoteMessage.getData().get("icon");
@@ -108,5 +110,5 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         noti.notify(i, builder.build());
     }
-   */
+
 }
