@@ -48,13 +48,13 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/grecyclerview"
+        android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/typed_message"
         android:layout_below="@id/cardview"
-        android:background="#ebf3f5"
-        android:backgroundTint="#777070" />
+        android:background="#eaf4fc"
+        />
 
     <EditText
         android:layout_width="match_parent"

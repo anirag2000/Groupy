@@ -51,6 +51,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
     implementation 'com.mikhaellopez:circularimageview:4.2.0'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+    implementation'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC2'
 
 
 }

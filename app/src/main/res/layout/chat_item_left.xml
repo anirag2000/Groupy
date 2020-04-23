@@ -11,7 +11,7 @@
         android:id="@+id/fromUsernameGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -25,7 +25,7 @@
             android:id="@+id/textmessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+
             android:background="@drawable/bubble_from"
             android:foregroundGravity="bottom"
             android:gravity="center"

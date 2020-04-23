@@ -1,12 +1,15 @@
 package com.example.groupy.Messenger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,9 +28,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.bumptech.glide.Glide;
+import com.example.groupy.Home;
 import com.example.groupy.User_details;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +41,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.example.groupy.R;
 
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -74,17 +83,6 @@ public class MessagingActivity extends AppCompatActivity {
         left = 0;
         right = 0;
 
-        //initialise the toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
 
         //initialize all the components on screen
@@ -100,13 +98,18 @@ public class MessagingActivity extends AppCompatActivity {
 
         intent = getIntent();
 
-        //loading the messages
+
+
+
+
+
 
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
+
 
         //loading the page
         final String userid = intent.getStringExtra("userid");
@@ -132,7 +135,9 @@ public class MessagingActivity extends AppCompatActivity {
                 // Log.e("this is the photourl",user.getPhotourl());
                 //Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(rimage);
 
-
+                messageAdapter = new ChatAdapter(MessagingActivity.this, texts, user.getPhotourl(), currentuser);
+                recyclerView.setAdapter(messageAdapter);
+                recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
                 readmessages(firebaseUser.getUid(), userid, user.getPhotourl(), currentuser);
             }
 
@@ -141,8 +146,91 @@ public class MessagingActivity extends AppCompatActivity {
 
             }
         });
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
+        reference.child("AddDetails").child(currentuser).child(userid).child("Typing").setValue("0");
+        reference.child("AddDetails").child(currentuser).child(userid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Typing").getValue(String.class).equals("1"))
+                {
+                    TextView typing=findViewById(R.id.typing);
+                    typing.setVisibility(View.VISIBLE);
+                }
+                if(dataSnapshot.child("Typing").getValue(String.class).equals("0"))
+                {
+                    TextView typing=findViewById(R.id.typing);
+                    typing.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        LinearLayout linearLayout=findViewById(R.id.linearLayout2);
+        linearLayout.setBackgroundResource(R.drawable.red);
+         reference=FirebaseDatabase.getInstance().getReference().child("online_statuses");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(userid))
+                {
+                    if(dataSnapshot.child(userid).getValue(String.class).equals("online"))
+                    {
+                        linearLayout.setBackgroundResource(R.drawable.green);
+                    }
+                    else
+                    {
+                        linearLayout.setBackgroundResource(R.drawable.red);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        KeyboardVisibilityEvent.setEventListener(
+               this,
+                (KeyboardVisibilityEventListener) isOpen -> {
+                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
 
 
+                });
+
+
+DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
+message.addTextChangedListener(new TextWatcher() {
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("1");
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("0");
+            }
+        }, 4000);
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+
+
+    }
+});
         //send the message
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,8 +240,7 @@ public class MessagingActivity extends AppCompatActivity {
                     sendmessage(userid, firebaseUser.getUid(), typedmessage);
 
                     //keyboard closing after send
-                    InputMethodManager inputManager = (InputMethodManager) MessagingActivity.this.getSystemService(MessagingActivity.this.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(MessagingActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
                 } else {
                     Toast.makeText(MessagingActivity.this, "Oops, you can't send empty messages!", Toast.LENGTH_SHORT).show();
                 }
@@ -183,34 +270,55 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
+        recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
+        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
 
-        reference.addValueEventListener(new ValueEventListener() {
+
+        reference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                texts.clear();
-                left = 0;
-                right = 0;
-                //texts= new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Chat chat = dataSnapshot.getValue(Chat.class);
 
-                    //if the receiver and sender are the same people we are talking to
-                    Log.e("sample message is ", "im here");
-                    if (chat.getSender().equals(sender) && chat.getReciever().equals(receiver)
-                            || chat.getSender().equals(receiver) && chat.getReciever().equals(sender)) {
-                        texts.add(chat);
-                    }
-                    //The RecyclerView is a new ViewGroup that is prepared to render any adapter-based view in a similar way.
+
+                //if the receiver and sender are the same people we are talking to
+                Log.e("sample message is ", "im here");
+
+                if (chat.getSender().equals(sender) && chat.getReciever().equals(receiver)
+                        || chat.getSender().equals(receiver) && chat.getReciever().equals(sender)) {
+                    texts.add(chat);
+                   //
+                    messageAdapter.notifyDataSetChanged();
+                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+
+
+
+
 
 
                 }
 
-                messageAdapter = new ChatAdapter(MessagingActivity.this, texts, imageurl, currentuser);
-                recyclerView.setAdapter(messageAdapter);
 
+
+                //The RecyclerView is a new ViewGroup that is prepared to render any adapter-based view in a similar way.
+            }
+
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -218,10 +326,12 @@ public class MessagingActivity extends AppCompatActivity {
             }
         });
 
+        }
+
     }
 
 
-}
+
 
 class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 

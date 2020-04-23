@@ -31,7 +31,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class Home extends AppCompatActivity  {
-
+    DatabaseReference online_status_all_users;
+    FirebaseUser firebaseUser;
     ViewPager viewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,24 @@ public class Home extends AppCompatActivity  {
 
         viewPager= findViewById(R.id.view_pager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+
+        //whats the receiver's details for the page load
+         firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+
+
+
+
+
+        //FOR ONLINE AND OFFLINE PART
+        //say your realtime database has the child `online_statuses`
+        online_status_all_users = FirebaseDatabase.getInstance().getReference().child("online_statuses");
+
+        //on each user's device when connected they should indicate e.g. `linker` should tell everyone he's snooping around
+        online_status_all_users.child(firebaseUser.getUid()).setValue("online");
+        //also when he's not doing any snooping or if snooping goes bad he should also tell
+        online_status_all_users.child(firebaseUser.getUid()).onDisconnect().setValue("offline");
+
+
 
 
 
@@ -56,6 +75,14 @@ public class Home extends AppCompatActivity  {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+        online_status_all_users.child(firebaseUser.getUid()).setValue("online");
     }
 
 
@@ -82,4 +109,6 @@ public class Home extends AppCompatActivity  {
     public int getCount() {
         return 2;
     }
+
+
 }
