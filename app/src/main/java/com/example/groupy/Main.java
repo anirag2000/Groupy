@@ -97,6 +97,32 @@ public class Main extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        Button button2=view.findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String muid=FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference reference=FirebaseDatabase.getInstance().getReference("Users").child(muid).child("group_id");
+                reference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String group=dataSnapshot.getValue(String.class);
+                        Toast.makeText(getContext(),group,Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+
+
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false); // if you want user to wait for some process to finish,
         builder.setView(R.layout.layout_loading_dialog);
@@ -175,10 +201,14 @@ group_id=snapshot.child("group_id").getValue(String.class);
                 mImageUrls.clear();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     //Toast.makeText(Home.this,"this"+postSnapshot.getValue(String.class),Toast.LENGTH_LONG).show();
-                    mNames.add(postSnapshot.child("name").getValue(String.class));
-                    mImageUrls.add(postSnapshot.child("photourl").getValue(String.class));
-                    RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mNames, mImageUrls);
-                    recyclerView.setAdapter(adapter);
+
+                    String uid=(postSnapshot.getKey());
+                    if(uid.length()>7) {
+                        mNames.add(postSnapshot.child("name").getValue(String.class));
+                        mImageUrls.add(postSnapshot.child("photourl").getValue(String.class));
+                        RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mNames, mImageUrls);
+                        recyclerView.setAdapter(adapter);
+                    }
                 }
             }
             @Override
@@ -187,6 +217,13 @@ group_id=snapshot.child("group_id").getValue(String.class);
         });
         // initRecyclerView();
     }
+    public void getuid(View view )
+    {
+
+
+
+    }
+
 
 
 

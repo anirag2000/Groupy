@@ -107,7 +107,7 @@ public class Dms extends Fragment { //Nothing But displaying all users
                     assert user!=null;
                     assert firebaseUser!=null;
                     if(user.getGroup_id().equals(groupcode)){
-                        if(!user.getUid().equals(firebaseUser.getUid())) {
+                        if(!user.getUid().equals(firebaseUser.getUid())&& (user.getUid()).length()>7) {
                             mUsers.add(user);
                         }
                     }
