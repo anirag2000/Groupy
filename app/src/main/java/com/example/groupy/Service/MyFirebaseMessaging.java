@@ -10,7 +10,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.example.groupy.Messenger.MessagingActivity;
@@ -22,7 +24,10 @@ import com.google.firebase.messaging.RemoteMessage;
 public class MyFirebaseMessaging extends FirebaseMessagingService {
 
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+
+
+        Log.e("this is remote message",remoteMessage.toString());
         super.onMessageReceived(remoteMessage);
 
         String sented = remoteMessage.getData().get("sented");
@@ -33,18 +38,15 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (firebaseUser != null && sented.equals(firebaseUser.getUid())){
+        if (firebaseUser != null && sented.equals(firebaseUser.getUid())) {
             if (!currentUser.equals(user)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    sendOreoNotification(remoteMessage);
-                } else {
-                    sendNotification(remoteMessage);
-                }
+                sendOreoNotification(remoteMessage);
             }
         }
     }
 
-    private void sendOreoNotification(RemoteMessage remoteMessage){
+
+    private void sendOreoNotification(RemoteMessage remoteMessage) {
         String user = remoteMessage.getData().get("user");
         String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
@@ -65,7 +67,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                 defaultSound, icon);
 
         int i = 0;
-        if (j > 0){
+        if (j > 0) {
             i = j;
         }
 
@@ -73,7 +75,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
     }
 
-    private void sendNotification(RemoteMessage remoteMessage) {
+  /*  private void sendNotification(RemoteMessage remoteMessage) {
 
         String user = remoteMessage.getData().get("user");
         String icon = remoteMessage.getData().get("icon");
@@ -106,4 +108,5 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         noti.notify(i, builder.build());
     }
+   */
 }

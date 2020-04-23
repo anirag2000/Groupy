@@ -1,31 +1,29 @@
 package com.example.groupy.Service;
 
 public class Data {
-
-    private String RUser;
+    private String user;
     private int icon;
     private String body;
     private String title;
-    private String sentBy;
+    private String sented;
 
-
-    public Data(String RUser, int icon, String body, String title, String sentBy) {
-        this.RUser = RUser;
+    public Data(String user, int icon, String body, String title, String sented) {
+        this.user = user;
         this.icon = icon;
         this.body = body;
         this.title = title;
-        this.sentBy = sentBy;
+        this.sented = sented;
     }
 
     public Data() {
     }
 
-    public String getRUser() {
-        return RUser;
+    public String getUser() {
+        return user;
     }
 
-    public void setRUser(String RUser) {
-        this.RUser = RUser;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public int getIcon() {
@@ -52,12 +50,11 @@ public class Data {
         this.title = title;
     }
 
-    public String getSentBy() {
-        return sentBy;
+    public String getSented() {
+        return sented;
     }
 
-    public void setSentBy(String sentBy) {
-        this.sentBy = sentBy;
+    public void setSented(String sented) {
+        this.sented = sented;
     }
 }
-

@@ -30,7 +30,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.groupy.Home;
+import com.example.groupy.Service.Client;
+import com.example.groupy.Service.Data;
 import com.example.groupy.Service.MyFirebaseIdService;
+import com.example.groupy.Service.MyResponse;
+import com.example.groupy.Service.Sender;
 import com.example.groupy.Service.Token;
 import com.example.groupy.User_details;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,11 +45,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import com.example.groupy.R;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.twitter.sdk.android.core.models.User;
 
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -58,6 +64,9 @@ import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MessagingActivity extends AppCompatActivity {
@@ -76,6 +85,9 @@ public class MessagingActivity extends AppCompatActivity {
     ImageButton send;
     EditText message;
     String token;
+
+    APIService apiService;
+    boolean notify=false;
 
     ChatAdapter messageAdapter;
     RecyclerView recyclerView;
@@ -101,6 +113,8 @@ public class MessagingActivity extends AppCompatActivity {
             updateToken(token);
         });
 
+
+        apiService= Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
 
 
@@ -257,6 +271,7 @@ message.addTextChangedListener(new TextWatcher() {
             public void onClick(View v) {
                 String typedmessage = message.getText().toString();
                 if (!typedmessage.isEmpty()) {
+                    notify=true;
                     sendmessage(userid, firebaseUser.getUid(), typedmessage);
 
                     //keyboard closing after send
@@ -287,12 +302,107 @@ message.addTextChangedListener(new TextWatcher() {
         Chat chat = new Chat(reciever, from, message, date_string);
 
         reference.child("Chats").push().setValue(chat);
+
+
+
+
+
+
+
+
+
+        final String msg = message;
+
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User_details user = dataSnapshot.getValue(User_details.class);
+                if(notify) {
+                    sendNotifiaction(reciever, user.getName(), msg);
+                }
+                notify=false;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+
+
+
     }
+
+
+
+    private void sendNotifiaction(String receiver, final String username, final String message){
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = tokens.orderByKey().equalTo(receiver);
+
+        intent = getIntent();
+        String userid=intent.getStringExtra("userid");
+
+
+
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Token token = snapshot.getValue(Token.class);
+                    Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher, username+": "+message, "New Message",
+                            userid);
+
+                    Sender sender = new Sender(data, token.getToken());
+
+
+                    apiService.sendNotification(sender)
+                            .enqueue(new Callback<MyResponse>() {
+                                @Override
+                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                    if (response.code() == 200){
+                                        if (response.body().success != 1){
+                                            Toast.makeText(MessagingActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                                }
+
+                });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
         recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
-        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()+1);
 
 
         reference.addChildEventListener(new ChildEventListener() {
@@ -358,6 +468,9 @@ message.addTextChangedListener(new TextWatcher() {
 
 
     }
+
+
+
 
 
 
