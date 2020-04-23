@@ -77,6 +77,7 @@ public class MessagingActivity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference reference;
     DatabaseReference temp;
+    LinearLayoutManager linearLayoutManager;
     FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
 
     ImageButton send;
@@ -132,7 +133,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager= new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -164,7 +165,7 @@ public class MessagingActivity extends AppCompatActivity {
 
                 messageAdapter = new ChatAdapter(MessagingActivity.this, texts, user.getPhotourl(), currentuser);
                 recyclerView.setAdapter(messageAdapter);
-                recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()+1);
+
 
 
 
@@ -306,7 +307,7 @@ message.addTextChangedListener(new TextWatcher() {
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
         recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
-        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()+1);
+        //recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()+1);
 
 
         reference.addChildEventListener(new ChildEventListener() {
@@ -329,11 +330,20 @@ message.addTextChangedListener(new TextWatcher() {
 
 
 
+                    final Handler handler = new Handler();
+//100ms wait to scroll to item after applying changes
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                          linearLayoutManager.smoothScrollToPosition(recyclerView,new RecyclerView.State(),messageAdapter.getItemCount());
+                        }}, 100);
 
 
 
 
                 }
+
+
 
 
 
@@ -469,6 +479,9 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
         });
         if(getItemViewType(position)==MSG_TYPE_LEFT&& position==getItemCount()-1){
         holder.itemView.setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.anim));}
+        if(getItemViewType(position)==MSG_TYPE_RIGHT&& position==getItemCount()-1){
+            holder.itemView.setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.right));}
+
 
 
 
