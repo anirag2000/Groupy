@@ -4,21 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -30,7 +25,6 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -77,7 +71,6 @@ public class MessagingActivity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference reference;
     DatabaseReference temp;
-    LinearLayoutManager linearLayoutManager;
     FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
 
     ImageButton send;
@@ -133,10 +126,9 @@ public class MessagingActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
-        linearLayoutManager= new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-
 
 
         //loading the page
@@ -165,11 +157,6 @@ public class MessagingActivity extends AppCompatActivity {
 
                 messageAdapter = new ChatAdapter(MessagingActivity.this, texts, user.getPhotourl(), currentuser);
                 recyclerView.setAdapter(messageAdapter);
-
-
-
-
-
 
                 readmessages(firebaseUser.getUid(), userid, user.getPhotourl(), currentuser);
             }
@@ -230,7 +217,7 @@ public class MessagingActivity extends AppCompatActivity {
         KeyboardVisibilityEvent.setEventListener(
                this,
                 (KeyboardVisibilityEventListener) isOpen -> {
-                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()+1);
+                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
 
 
                 });
@@ -286,8 +273,6 @@ message.addTextChangedListener(new TextWatcher() {
     }
 
 
-
-
     void sendmessage(String reciever, String from, String message) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
@@ -307,7 +292,7 @@ message.addTextChangedListener(new TextWatcher() {
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
         recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
-        //recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()+1);
+        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
 
 
         reference.addChildEventListener(new ChildEventListener() {
@@ -324,26 +309,14 @@ message.addTextChangedListener(new TextWatcher() {
                     texts.add(chat);
                    //
                     messageAdapter.notifyDataSetChanged();
+                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
 
 
-
-
-
-
-                    final Handler handler = new Handler();
-//100ms wait to scroll to item after applying changes
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                          linearLayoutManager.smoothScrollToPosition(recyclerView,new RecyclerView.State(),messageAdapter.getItemCount());
-                        }}, 100);
 
 
 
 
                 }
-
-
 
 
 
@@ -399,7 +372,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
     private List<Chat> texts;
     private String imageurl;
     private String currentuser;
-    long DURATION = 500;
+
     FirebaseUser firebaseUser;
 
 
@@ -441,8 +414,6 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
         holder.date.setText(time_formatted[0] + ":" + time_formatted[1]);
 
 
-
-
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(currentuser);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -477,13 +448,6 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
             }
         });
-        if(getItemViewType(position)==MSG_TYPE_LEFT&& position==getItemCount()-1){
-        holder.itemView.setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.anim));}
-        if(getItemViewType(position)==MSG_TYPE_RIGHT&& position==getItemCount()-1){
-            holder.itemView.setAnimation(AnimationUtils.loadAnimation(mContext,R.anim.right));}
-
-
-
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -503,8 +467,6 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
         });
 
 
-
-
     }
 
     @Override
@@ -513,7 +475,6 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
     }
 
     public class viewholder extends RecyclerView.ViewHolder {
-        LinearLayout linearLayout;
         public CircleImageView image;
         public CircleImageView rimage;
         public TextView textmessage;
@@ -521,7 +482,6 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
         public viewholder(View itemView) {
             super(itemView);
-            linearLayout=itemView.findViewById(R.id.linearlayout);
             textmessage = itemView.findViewById(R.id.textmessage);
             image = itemView.findViewById(R.id.circleimage);
             //image=itemView.findViewById(R.id.rimage);
@@ -531,7 +491,6 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
         }
 
     }
-
 
     @Override
     public int getItemViewType(int position) {
