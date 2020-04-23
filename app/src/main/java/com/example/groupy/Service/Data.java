@@ -2,12 +2,12 @@ package com.example.groupy.Service;
 
 public class Data {
     private String user;
-    private int icon;
+    private String icon;
     private String body;
     private String title;
     private String sented;
 
-    public Data(String user, int icon, String body, String title, String sented) {
+    public Data(String user, String icon, String body, String title, String sented) {
         this.user = user;
         this.icon = icon;
         this.body = body;
@@ -26,11 +26,11 @@ public class Data {
         this.user = user;
     }
 
-    public int getIcon() {
+    public String getIcon() {
         return icon;
     }
 
-    public void setIcon(int icon) {
+    public void setIcon(String icon) {
         this.icon = icon;
     }
 

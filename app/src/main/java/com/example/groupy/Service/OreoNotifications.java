@@ -7,8 +7,18 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 public class OreoNotifications extends ContextWrapper {
 
@@ -47,14 +57,48 @@ public class OreoNotifications extends ContextWrapper {
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    public  Notification.Builder getOreoNotification(String title, String body,
+    public  void getBitMap(String title, String body,
                                                      PendingIntent pendingIntent, Uri soundUri, String icon){
+
+        final Bitmap[] bitmap = {null};
+
+        Glide.with(getApplicationContext())
+                .asBitmap()
+                .load(icon)
+                .into(new CustomTarget<Bitmap>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+
+                        bitmap[0] = resource;
+                        // TODO Do some work: pass this bitmap
+                        displayImageNotification()
+
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                    }
+                });
+
+    }
+
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private Notification.Builder displayImageNotification(Bitmap bitmap, String title, String body, PendingIntent pendingintent,
+                                                          Uri soundUri) {
+
         return new Notification.Builder(getApplicationContext(), CHANNEL_ID)
-                .setContentIntent(pendingIntent)
+                .setContentIntent(pendingintent)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setSmallIcon(Integer.parseInt(icon))
+                .setLargeIcon(bitmap)
                 .setSound(soundUri)
                 .setAutoCancel(true);
+
+
     }
+
 }
