@@ -81,7 +81,7 @@ public class MessagingActivity extends AppCompatActivity {
     DatabaseReference reference;
     DatabaseReference temp;
     FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
-
+    LinearLayoutManager linearLayoutManager;
     ImageButton send;
     EditText message;
     String token;
@@ -140,7 +140,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager= new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -419,7 +419,14 @@ message.addTextChangedListener(new TextWatcher() {
                     texts.add(chat);
                    //
                     messageAdapter.notifyDataSetChanged();
-                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Write whatever to want to do after delay specified (1 sec)
+                         linearLayoutManager.smoothScrollToPosition(recyclerView,new RecyclerView.State(),messageAdapter.getItemCount());
+                        }
+                    }, 100);
 
 
 
