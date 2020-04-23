@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,16 +15,22 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.FutureTarget;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.groupy.Messenger.MessagingActivity;
+import com.example.groupy.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class MyFirebaseMessaging extends FirebaseMessagingService {
-
+int j;
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -55,7 +63,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String body = remoteMessage.getData().get("body");
 
         RemoteMessage.Notification notification = remoteMessage.getNotification();
-        int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
+        j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MessagingActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("userid", user);
@@ -65,15 +73,11 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         OreoNotifications oreoNotification = new OreoNotifications(this);
-        Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent,
-                defaultSound, icon);
+         oreoNotification.getOreoNotification(title, body, pendingIntent,
+                defaultSound, icon,j);
 
-        int i = 0;
-        if (j > 0) {
-            i = j;
-        }
 
-        oreoNotification.getManager().notify(i, builder.build());
+
 
     }
 
@@ -85,7 +89,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String body = remoteMessage.getData().get("body");
 
         RemoteMessage.Notification notification = remoteMessage.getNotification();
-        int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
+        j = Integer.parseInt(user.replaceAll("[\\D]", ""));
         Intent intent = new Intent(this, MessagingActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("userid", user);
@@ -93,14 +97,50 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(Integer.parseInt(icon))
+
+
+
+getBitmapAsyncAndDoWork(icon,title,body,pendingIntent);
+
+    }
+    private void getBitmapAsyncAndDoWork(String imageUrl, String title, String body, PendingIntent pendingintent) {
+
+        final Bitmap[] bitmap = {null};
+
+        Glide.with(getApplicationContext())
+                .asBitmap()
+                .load(imageUrl)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+
+                        bitmap[0] = resource;
+                        // TODO Do some work: pass this bitmap
+                        displayImageNotification(bitmap[0],title,body,pendingintent);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                    }
+                });
+    }
+
+    private void displayImageNotification(Bitmap bitmap, String title, String body, PendingIntent pendingintent) {
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        builder
                 .setContentTitle(title)
                 .setContentText(body)
+                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
+                .setSmallIcon(R.drawable.chat)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
                 .setAutoCancel(true)
-                .setSound(defaultSound)
-                .setContentIntent(pendingIntent);
+                .setOngoing(false)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(pendingintent)
+                .setLargeIcon(bitmap)
+                .setPriority(Notification.PRIORITY_HIGH);
         NotificationManager noti = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 
         int i = 0;
@@ -109,6 +149,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         }
 
         noti.notify(i, builder.build());
+
     }
 
 }

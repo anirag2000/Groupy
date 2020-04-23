@@ -85,6 +85,7 @@ public class MessagingActivity extends AppCompatActivity {
     ImageButton send;
     EditText message;
     String token;
+ String userpicurl;
 
     APIService apiService;
     boolean notify=false;
@@ -342,12 +343,24 @@ message.addTextChangedListener(new TextWatcher() {
 
     private void sendNotifiaction(String receiver, final String username, final String message){
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        DatabaseReference userpic = FirebaseDatabase.getInstance().getReference("Users");
+
         Query query = tokens.orderByKey().equalTo(receiver);
 
         intent = getIntent();
         String userid=intent.getStringExtra("userid");
 
+        userpic.child(userid).child("photourl").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userpicurl=dataSnapshot.getValue(String.class);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
         query.addValueEventListener(new ValueEventListener() {
@@ -355,7 +368,7 @@ message.addTextChangedListener(new TextWatcher() {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher, username+": "+message, "New Message",
+                    Data data = new Data(firebaseUser.getUid(),userpicurl, message, username,
                             userid);
 
                     Sender sender = new Sender(data, token.getToken());
