@@ -124,14 +124,14 @@ public class Main extends Fragment {
             startActivity(intent);
         }
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        dialog.show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                dialog.hide();;
-
-            }
-        },2000);
+//        dialog.show();
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                dialog.hide();;
+//
+//            }
+//        },2000);
         ref.child("Users").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {

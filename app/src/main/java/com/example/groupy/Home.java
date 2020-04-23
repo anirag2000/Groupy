@@ -38,6 +38,8 @@ public class Home extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        supportPostponeEnterTransition();
+        supportStartPostponedEnterTransition();
 
         viewPager= findViewById(R.id.view_pager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
