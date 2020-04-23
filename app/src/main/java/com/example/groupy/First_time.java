@@ -2,12 +2,16 @@ package com.example.groupy;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -50,13 +54,19 @@ public class First_time extends AppCompatActivity {
     String final_uri;
     ImageView profilepic;
     Uri downloadUrl;
+    Dialog dialog;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_time);
         imageview = findViewById(R.id.imageView4);
+        AlertDialog.Builder builder = new AlertDialog.Builder(First_time.this);
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+        dialog= builder.create();
         imageview.setVisibility(View.INVISIBLE);
         mStorageRef = FirebaseStorage.getInstance().getReference();
         profilepic = findViewById(R.id.profilepic);
@@ -133,7 +143,7 @@ public class First_time extends AppCompatActivity {
 
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            Toast.makeText(First_time.this, "Bella ciao", Toast.LENGTH_LONG).show();
+           dialog.show();
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri Result_uri = result.getUri();
@@ -142,7 +152,7 @@ public class First_time extends AppCompatActivity {
                 ref.putFile(Result_uri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                     downloadUrl = uri;
                     final_uri = uri.toString();
-                    Toast.makeText(First_time.this, "bella ciao part2", Toast.LENGTH_LONG).show();
+             dialog.hide();
                     if (data != null) {
                         profilepic.setImageURI(Result_uri);
                     }

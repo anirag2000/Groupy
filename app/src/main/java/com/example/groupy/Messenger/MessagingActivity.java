@@ -114,6 +114,13 @@ public class MessagingActivity extends AppCompatActivity {
         left = 0;
         right = 0;
 
+        ImageButton back=findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MessagingActivity.super.onBackPressed();
+            }
+        });
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(MessagingActivity.this, instanceIdResult -> {
             token = instanceIdResult.getToken();
@@ -147,11 +154,11 @@ public class MessagingActivity extends AppCompatActivity {
 
 
         recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setHasFixedSize(true);
-        linearLayoutManager= new LinearLayoutManager(getApplicationContext());
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
 
+        linearLayoutManager= new LinearLayoutManager(this);
+
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(messageAdapter);
 
         //loading the page
         final String userid = intent.getStringExtra("userid");
@@ -178,7 +185,7 @@ public class MessagingActivity extends AppCompatActivity {
                 //Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(rimage);
 
                 messageAdapter = new ChatAdapter(MessagingActivity.this, texts, user.getPhotourl(), currentuser);
-                recyclerView.setAdapter(messageAdapter);
+
 
                 readmessages(firebaseUser.getUid(), userid, user.getPhotourl(), currentuser);
             }
@@ -236,13 +243,13 @@ public class MessagingActivity extends AppCompatActivity {
 
             }
         });
-        KeyboardVisibilityEvent.setEventListener(
-               this,
-                (KeyboardVisibilityEventListener) isOpen -> {
-                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
-
-
-                });
+//        KeyboardVisibilityEvent.setEventListener(
+//               this,
+//                (KeyboardVisibilityEventListener) isOpen -> {
+//                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+//
+//
+//                });
 
         DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
          timer = new Timer();
@@ -427,7 +434,7 @@ public class MessagingActivity extends AppCompatActivity {
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
         recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
-        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()+1);
+
 
 
         reference.addChildEventListener(new ChildEventListener() {
@@ -444,14 +451,15 @@ public class MessagingActivity extends AppCompatActivity {
                     texts.add(chat);
                    //
                     messageAdapter.notifyDataSetChanged();
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
+                    new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            //Write whatever to want to do after delay specified (1 sec)
-                         linearLayoutManager.smoothScrollToPosition(recyclerView,new RecyclerView.State(),messageAdapter.getItemCount());
+                            recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount());
                         }
-                    }, 100);
+                    }, 200);
+
+
+
 
 
 
@@ -599,6 +607,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
             @Override
             public void onClick(View v) {
                 holder.date.setVisibility(View.VISIBLE);
+
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -608,9 +617,8 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
                 }, 1000);
 
 
-            }
-        });
-
+         }
+       });
 
     }
 
