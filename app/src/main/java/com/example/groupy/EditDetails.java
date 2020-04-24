@@ -59,33 +59,6 @@ String final_uri;
         dialog= builder.create();
        group_id= intent.getStringExtra("group_code");
         uid=intent.getStringExtra("uid");
-        dialog.show();
-       mStorageRef= FirebaseStorage.getInstance().getReference();
-       // Toast.makeText(EditDetails.this,uid,Toast.LENGTH_LONG).show();
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Users");
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                name=dataSnapshot.child(uid).child("name").getValue(String.class);
-                //Toast.makeText(EditDetails.this,name,Toast.LENGTH_LONG).show();
-                email=dataSnapshot.child(uid).child("email").getValue(String.class);
-                photourl=dataSnapshot.child(uid).child("photourl").getValue(String.class);
-                TextView name_tv=findViewById(R.id.textView8);
-                TextView email_tv=findViewById(R.id.textView12);
-                name_tv.setText(name);
-                email_tv.setText(email);
-                ImageView photo=findViewById(R.id.imageView3);
-                Glide.with(EditDetails.this).load(photourl).into(photo);
-                dialog.hide();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,6 +147,33 @@ String final_uri;
             }
         });
 
+
+
+
+       mStorageRef= FirebaseStorage.getInstance().getReference();
+       // Toast.makeText(EditDetails.this,uid,Toast.LENGTH_LONG).show();
+        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Users");
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                name=dataSnapshot.child(uid).child("name").getValue(String.class);
+                //Toast.makeText(EditDetails.this,name,Toast.LENGTH_LONG).show();
+                email=dataSnapshot.child(uid).child("email").getValue(String.class);
+                photourl=dataSnapshot.child(uid).child("photourl").getValue(String.class);
+                TextView name_tv=findViewById(R.id.textView8);
+                TextView email_tv=findViewById(R.id.textView12);
+                name_tv.setText(name);
+                email_tv.setText(email);
+                ImageView photo=findViewById(R.id.imageView3);
+                Glide.with(EditDetails.this).load(photourl).into(photo);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
 

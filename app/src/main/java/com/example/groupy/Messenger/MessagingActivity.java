@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -243,13 +244,13 @@ public class MessagingActivity extends AppCompatActivity {
 
             }
         });
-//        KeyboardVisibilityEvent.setEventListener(
-//               this,
-//                (KeyboardVisibilityEventListener) isOpen -> {
-//                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
-//
-//
-//                });
+        KeyboardVisibilityEvent.setEventListener(
+               this,
+                (KeyboardVisibilityEventListener) isOpen -> {
+                    recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+
+
+                });
 
         DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
          timer = new Timer();
@@ -269,7 +270,7 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(final Editable s) {
                 //avoid triggering event when text is too short
-                if (s.length() >= 3) {
+                if (s.length() >= 0) {
 
                     timer = new Timer();
                     timer.schedule(new TimerTask() {
@@ -619,6 +620,13 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
          }
        });
+        if(getItemViewType(position)==MSG_TYPE_LEFT&& position==getItemCount()-1) {
+            holder.itemView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.anim));
+        }
+        else if(getItemViewType(position)==MSG_TYPE_RIGHT&& position==getItemCount()-1)
+        {
+            holder.itemView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.right));
+        }
 
     }
 
