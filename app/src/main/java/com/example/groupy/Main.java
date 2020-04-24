@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -98,6 +99,21 @@ public class Main extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
+        Button button3=view.findViewById(R.id.button3);
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(), EditDetails.class);
+                intent.putExtra("group_code",group_id);
+                intent.putExtra("uid",uid);
+                startActivity(intent);
+            }
+        });
+
+
+
+
+
         Button button2=view.findViewById(R.id.button2);
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,8 +162,8 @@ public class Main extends Fragment {
             uid=currentFirebaseUser.getUid();
             Log.w("workkkk",uid);
         } else {
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(getContext(), MainActivity.class);
+//            startActivity(intent);
         }
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 //        dialog.show();
