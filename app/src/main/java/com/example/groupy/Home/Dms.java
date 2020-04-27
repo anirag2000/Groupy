@@ -1,4 +1,4 @@
-package com.example.groupy;
+package com.example.groupy.Home;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import com.example.groupy.Messenger.GroupChatActivity;
 import com.example.groupy.Messenger.MessagingActivity;
 import com.example.groupy.Messenger.UserAdapter;
+import com.example.groupy.R;
+import com.example.groupy.User_details;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

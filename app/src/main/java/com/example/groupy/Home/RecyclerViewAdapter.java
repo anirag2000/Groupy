@@ -1,10 +1,8 @@
-package com.example.groupy;
+package com.example.groupy.Home;
 
 import android.app.Dialog;
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -17,10 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.groupy.R;
 
-import org.w3c.dom.Text;
-
-import java.nio.file.attribute.PosixFileAttributes;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;

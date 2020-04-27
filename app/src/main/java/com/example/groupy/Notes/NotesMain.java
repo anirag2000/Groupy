@@ -1,17 +1,16 @@
-package com.example.groupy;
+package com.example.groupy.Notes;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-
+import com.example.groupy.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,7 +33,7 @@ group_code=intent.getStringExtra("group_code");
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-          Intent intent=new Intent(NotesMain.this,AddNotes.class);
+          Intent intent=new Intent(NotesMain.this, AddNotes.class);
           intent.putExtra("group_code",group_code);
           startActivity(intent);
             }
@@ -77,7 +76,6 @@ group_code=intent.getStringExtra("group_code");
            recyclerView = findViewById(R.id.recyclerview);
         int numberOfColumns = 2;
         int spaceInPixels = 1;
-        recyclerView.addItemDecoration(new RecyclerViewItemDecorator(spaceInPixels));
         recyclerView.setLayoutManager(new GridLayoutManager(NotesMain.this, numberOfColumns));
 
 
