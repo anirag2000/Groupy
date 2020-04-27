@@ -1,4 +1,7 @@
-package com.example.groupy;
+package com.example.groupy.Notes;
+
+
+//Notes Class
 
 public class NotesModal {
     String title;

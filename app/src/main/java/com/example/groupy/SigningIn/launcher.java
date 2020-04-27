@@ -1,13 +1,17 @@
-package com.example.groupy;
+package com.example.groupy.SigningIn;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.groupy.Home.Home;
+import com.example.groupy.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
+
+//Decider if new user
+
 
 public class launcher extends AppCompatActivity {
 
@@ -24,13 +28,5 @@ public class launcher extends AppCompatActivity {
             Intent intent = new Intent(launcher.this, Home.class);
             startActivity(intent);
         }
-
-
-
-
-
-
-
-
     }
 }
