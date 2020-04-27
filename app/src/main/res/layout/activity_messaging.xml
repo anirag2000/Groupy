@@ -99,10 +99,11 @@
 
     <EditText
         android:id="@+id/typed_message"
-        android:layout_width="300dp"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="50dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
         android:layout_marginBottom="11dp"
         android:background="@drawable/sendmessagebox"
         android:hint="Type Your Message"

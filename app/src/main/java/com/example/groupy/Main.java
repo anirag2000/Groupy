@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.groupy.Service.Token;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,16 +39,9 @@ import java.util.ArrayList;
 import static android.content.Context.MODE_PRIVATE;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Main#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class Main extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
     public String uid;
 
     public String group_id;
@@ -55,32 +49,11 @@ public class Main extends Fragment {
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
     AlertDialog dialog;
+    AlertDialog group;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    Button groupbutton;
 
-    public Main() {
-        // Required empty public constructor
-    }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Main.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Main newInstance(String param1, String param2) {
-        Main fragment = new Main();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
 
     @Override
@@ -97,6 +70,36 @@ public class Main extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+
+        groupbutton=view.findViewById(R.id.groupid);
+        groupbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String muid=FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference reference=FirebaseDatabase.getInstance().getReference("Users").child(muid).child("group_id");
+                reference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String group=dataSnapshot.getValue(String.class);
+                        Toast.makeText(getContext(),group,Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        });
+
+
+
+
+
+
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false); // if you want user to wait for some process to finish,
         builder.setView(R.layout.layout_loading_dialog);
