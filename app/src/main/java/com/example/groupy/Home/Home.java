@@ -1,18 +1,25 @@
 package com.example.groupy.Home;
 
+import android.content.Intent;
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.os.Bundle;
-
 import com.example.groupy.R;
+import com.example.groupy.calling.SinchService;
+import com.example.groupy.calling.SinchStatus;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 
 //Page Viewer
@@ -25,11 +32,12 @@ public class Home extends AppCompatActivity  {
     ViewPager viewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         supportPostponeEnterTransition();
         supportStartPostponedEnterTransition();
-
+        startService(new Intent(this, SinchService.class));
         viewPager= findViewById(R.id.view_pager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
 
@@ -68,13 +76,35 @@ public class Home extends AppCompatActivity  {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSinchConnected(SinchStatus.SinchConnected sinchConnected){
 
-
-        online_status_all_users.child(firebaseUser.getUid()).setValue("online");
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSinchDisconnected(SinchStatus.SinchDisconnected sinchDisconnected){
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSinchFailed(SinchStatus.SinchFailed sinchFailed){
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSinchLogging(SinchStatus.SinchLogger sinchLogger){
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
 
 
 }

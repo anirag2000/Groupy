@@ -5,6 +5,9 @@ buildscript {
     repositories {
         google()
         jcenter()
+        flatDir {
+            dirs 'libs'
+        }
         
     }
     dependencies {
@@ -21,8 +24,18 @@ allprojects {
     repositories {
         google()
         jcenter()
+
+        flatDir {
+            dirs 'libs'
+        }
         
     }
+
+
+
+
+
+
 }
 
 task clean(type: Delete) {

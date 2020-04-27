@@ -1,16 +1,15 @@
 package com.example.groupy.Messenger;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,18 +20,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.bumptech.glide.Glide;
+import com.example.groupy.R;
 import com.example.groupy.Service.Client;
 import com.example.groupy.Service.Data;
 import com.example.groupy.Service.MyResponse;
 import com.example.groupy.Service.Sender;
 import com.example.groupy.Service.Token;
 import com.example.groupy.User_details;
+import com.example.groupy.calling.Apps;
+import com.example.groupy.calling.IncommingCallActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -42,10 +47,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import com.example.groupy.R;
 import com.google.firebase.iid.FirebaseInstanceId;
-
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -62,6 +64,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
 public class MessagingActivity extends AppCompatActivity {
@@ -83,7 +87,8 @@ public class MessagingActivity extends AppCompatActivity {
  String userpicurl;
  Timer timer;
     long DELAY;
-
+CircleImageView t_image;
+TextView t_text;
     APIService apiService;
     boolean notify=false;
 
@@ -103,7 +108,8 @@ public class MessagingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messaging);
         left = 0;
         right = 0;
-
+t_image=findViewById(R.id.circleimage);
+t_text=findViewById(R.id.username);
         ImageButton back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +136,7 @@ public class MessagingActivity extends AppCompatActivity {
         send = findViewById(R.id.send);
         message = findViewById(R.id.typed_message);
         //image=findViewById(R.id.circleimage);
+        Toast.makeText(MessagingActivity.this,Apps.USER_ID,Toast.LENGTH_LONG).show();
 
 
         //whats the receiver's details for the page load
@@ -166,7 +173,34 @@ public class MessagingActivity extends AppCompatActivity {
                 //for the receiver
                 image = findViewById(R.id.circleimage);
                 text.setText(user.getName());
+                image.setOnLongClickListener(new View.OnLongClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public boolean onLongClick(View v) {
+                        if(Apps.callClient==null){
+                            Toast.makeText(MessagingActivity.this, "Sinch Client not connected", Toast.LENGTH_SHORT).show();
 
+                        }
+                        else {
+                            com.sinch.android.rtc.calling.Call currentcall = Apps.callClient.callUser(userid);
+                            Intent callscreen = new Intent(MessagingActivity.this, IncommingCallActivity.class);
+                            Pair[] pairs=new Pair[2];
+
+                            pairs[0]=new Pair<View,String>(t_image,"imageTransition");
+                            pairs[1]=new Pair<View,String>(t_text,"textTransition");
+
+                            ActivityOptions options=ActivityOptions.makeSceneTransitionAnimation(MessagingActivity.this,pairs);
+                            callscreen.putExtra("photo",user.getPhotourl());
+                            callscreen.putExtra("name",user.getName());
+                            callscreen.putExtra("callid",currentcall.getCallId());
+                            callscreen.putExtra("incomming", false);
+                            callscreen.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(callscreen,options.toBundle());
+
+                        }
+                        return false;
+                    }
+                });
                 Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(image);
 
 
@@ -185,6 +219,7 @@ public class MessagingActivity extends AppCompatActivity {
 
             }
         });
+
         DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
         reference.child("AddDetails").child(currentuser).child(userid).child("Typing").setValue("0");
         reference.child("AddDetails").child(currentuser).child(userid).addValueEventListener(new ValueEventListener() {
