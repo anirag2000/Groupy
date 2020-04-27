@@ -38,16 +38,16 @@
             android:textColor="#000"
             tools:text="Lorem ipsum si dolor" />
 
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="TextView"
+            tools:visibility="gone" />
+
 
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="60dp"
-        android:text="TextView"
-        tools:visibility="visible" />
 
 </LinearLayout>

@@ -2,12 +2,16 @@ package com.example.groupy;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -20,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,13 +55,19 @@ public class First_time extends AppCompatActivity {
     String final_uri;
     ImageView profilepic;
     Uri downloadUrl;
+    Dialog dialog;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_time);
         imageview = findViewById(R.id.imageView4);
+        AlertDialog.Builder builder = new AlertDialog.Builder(First_time.this);
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+        dialog= builder.create();
         imageview.setVisibility(View.INVISIBLE);
         mStorageRef = FirebaseStorage.getInstance().getReference();
         profilepic = findViewById(R.id.profilepic);
@@ -73,8 +84,8 @@ public class First_time extends AppCompatActivity {
         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentFirebaseUser == null) {
-            Intent intent = new Intent(First_time.this, MainActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(First_time.this, MainActivity.class);
+//            startActivity(intent);
         } else {
             uid = currentFirebaseUser.getUid();
         }
@@ -133,7 +144,7 @@ public class First_time extends AppCompatActivity {
 
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            Toast.makeText(First_time.this, "Bella ciao", Toast.LENGTH_LONG).show();
+           dialog.show();
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri Result_uri = result.getUri();
@@ -142,11 +153,25 @@ public class First_time extends AppCompatActivity {
                 ref.putFile(Result_uri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                     downloadUrl = uri;
                     final_uri = uri.toString();
-                    Toast.makeText(First_time.this, "bella ciao part2", Toast.LENGTH_LONG).show();
+             dialog.hide();
                     if (data != null) {
                         profilepic.setImageURI(Result_uri);
                     }
-                }));
+                })).addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                        dialog.hide();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        dialog.hide();
+                    }
+                });
+            }
+            else
+            {
+                dialog.hide();
             }
         }
 
@@ -160,14 +185,14 @@ public class First_time extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         Toast.makeText(First_time.this, "stopped", Toast.LENGTH_LONG).show();
-        FirebaseAuth.getInstance().signOut();
+
 
     }
 
 //make the user
     public void register(View view) {
         EditText name = findViewById(R.id.name);
-        EditText email = findViewById(R.id.date);
+        EditText email = findViewById(R.id.email);
         @SuppressLint("CutPasteId") EditText date = findViewById(R.id.date);
         EditText group_id = findViewById(R.id.group_code);
 
@@ -205,16 +230,23 @@ public class First_time extends AppCompatActivity {
                     myRef.setValue(user_details);
 
                     rootRef.child("group").child("group_code").child(group_id_string).child("ids").child(uid).setValue(user_details);
-                    SharedPreferences.Editor editor = getSharedPreferences("group", MODE_PRIVATE).edit();
-                    editor.putString("group_code", group_id_string);
-
-                    editor.apply();
 
 
-                    Intent intent = new Intent(First_time.this, MainActivity.class);
+
+                    dialog.show();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            dialog.hide();
+                            Intent intent = new Intent(First_time.this, Home.class);
+                            startActivity(intent);
 
 
-                    startActivity(intent);
+                        }
+                    }, 2000);
 
 
                 } else {
@@ -262,14 +294,21 @@ public class First_time extends AppCompatActivity {
                 rootRef.child("Users").child(group_id_string).setValue(group);
                 rootRef.child("Users").child(uid).setValue(user_details);
 
+dialog.show();
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        dialog.hide();
+                        Intent intent = new Intent(First_time.this, Home.class);
+                        startActivity(intent);
 
 
+                    }
+                }, 2000);
 
-                SharedPreferences.Editor editor = getSharedPreferences("group", MODE_PRIVATE).edit();
-                editor.putString("group_code", group_id_string);
-                editor.apply();
-                Intent intent = new Intent(First_time.this, MainActivity.class);
-                startActivity(intent);
 
 
             }

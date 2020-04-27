@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -51,6 +52,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.example.groupy.R;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.twitter.sdk.android.core.models.User;
 
 
@@ -62,7 +64,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
+import dagger.multibindings.ElementsIntoSet;
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -86,6 +92,8 @@ public class MessagingActivity extends AppCompatActivity {
     EditText message;
     String token;
  String userpicurl;
+ Timer timer;
+    long DELAY;
 
     APIService apiService;
     boolean notify=false;
@@ -107,6 +115,13 @@ public class MessagingActivity extends AppCompatActivity {
         left = 0;
         right = 0;
 
+        ImageButton back=findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MessagingActivity.super.onBackPressed();
+            }
+        });
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(MessagingActivity.this, instanceIdResult -> {
             token = instanceIdResult.getToken();
@@ -140,11 +155,11 @@ public class MessagingActivity extends AppCompatActivity {
 
 
         recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setHasFixedSize(true);
-        linearLayoutManager= new LinearLayoutManager(getApplicationContext());
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
 
+        linearLayoutManager= new LinearLayoutManager(this);
+
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(messageAdapter);
 
         //loading the page
         final String userid = intent.getStringExtra("userid");
@@ -171,7 +186,7 @@ public class MessagingActivity extends AppCompatActivity {
                 //Glide.with(MessagingActivity.this).load(user.getPhotourl()).into(rimage);
 
                 messageAdapter = new ChatAdapter(MessagingActivity.this, texts, user.getPhotourl(), currentuser);
-                recyclerView.setAdapter(messageAdapter);
+
 
                 readmessages(firebaseUser.getUid(), userid, user.getPhotourl(), currentuser);
             }
@@ -237,35 +252,40 @@ public class MessagingActivity extends AppCompatActivity {
 
                 });
 
-
-DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
-message.addTextChangedListener(new TextWatcher() {
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("1");
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
+         timer = new Timer();
+         DELAY = 1000; // in ms
+       message.addTextChangedListener(new TextWatcher() {
             @Override
-            public void run() {
-
-                databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("0");
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
             }
-        }, 4000);
+            @Override
+            public void onTextChanged(final CharSequence s, int start, int before,
+                                      int count) {
+                databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("1");
+                if(timer != null)
+                    timer.cancel();
+            }
+            @Override
+            public void afterTextChanged(final Editable s) {
+                //avoid triggering event when text is too short
+                if (s.length() >= 0) {
 
-    }
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            // TODO: do what you need here (refresh list)
+                            databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("0");
 
-    @Override
-    public void afterTextChanged(Editable s) {
+                        }
 
+                    }, DELAY);
+                }
+            }
+        });
 
-
-    }
-});
         //send the message
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -415,7 +435,7 @@ message.addTextChangedListener(new TextWatcher() {
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
         recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
-        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()+1);
+
 
 
         reference.addChildEventListener(new ChildEventListener() {
@@ -432,14 +452,15 @@ message.addTextChangedListener(new TextWatcher() {
                     texts.add(chat);
                    //
                     messageAdapter.notifyDataSetChanged();
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
+                    new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            //Write whatever to want to do after delay specified (1 sec)
-                         linearLayoutManager.smoothScrollToPosition(recyclerView,new RecyclerView.State(),messageAdapter.getItemCount());
+                            recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount());
                         }
-                    }, 100);
+                    }, 200);
+
+
+
 
 
 
@@ -587,6 +608,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
             @Override
             public void onClick(View v) {
                 holder.date.setVisibility(View.VISIBLE);
+
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -596,9 +618,15 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
                 }, 1000);
 
 
-            }
-        });
-
+         }
+       });
+        if(getItemViewType(position)==MSG_TYPE_LEFT&& position==getItemCount()-1) {
+            holder.itemView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.anim));
+        }
+        else if(getItemViewType(position)==MSG_TYPE_RIGHT&& position==getItemCount()-1)
+        {
+            holder.itemView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.right));
+        }
 
     }
 
