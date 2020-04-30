@@ -4,14 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +12,20 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
 import com.example.groupy.EditDetails;
+import com.example.groupy.HomeFragments.FragmentAdapter;
 import com.example.groupy.Notes.NotesMain;
 import com.example.groupy.R;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,14 +42,15 @@ import java.util.ArrayList;
 
 
 
-public class Main extends Fragment {
+public class Main extends Fragment  {
 
     public String uid;
-
+    ViewPager viewPager;
     public String group_id;
     public RecyclerView recyclerView;
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
+    private ArrayList<String >uids=new ArrayList<>();
     AlertDialog dialog;
 
 
@@ -57,7 +61,7 @@ public class Main extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // Inflate the layout for this fragment
 
 
@@ -68,6 +72,14 @@ public class Main extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+       viewPager =view.findViewById(R.id.viewPager);
+        FragmentAdapter fragmentAdapter=new FragmentAdapter(getActivity(),getChildFragmentManager());
+        viewPager.setAdapter(fragmentAdapter);
+        fragmentAdapter.notifyDataSetChanged();
+        TabLayout tabLayout=view.findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(viewPager);
+
 
         Button button3=view.findViewById(R.id.button3);
         button3.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +94,7 @@ public class Main extends Fragment {
 
 
 
-
+/////for toasting group id//////////////////
 
         Button button2=view.findViewById(R.id.button2);
         button2.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +117,7 @@ public class Main extends Fragment {
                 });
             }
         });
+        /////for toasting group id//////////////////
 
 
 
@@ -136,14 +149,7 @@ public class Main extends Fragment {
 //            startActivity(intent);
         }
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-//        dialog.show();
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                dialog.hide();;
-//
-//            }
-//        },2000);
+
         ref.child("Users").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -152,6 +158,9 @@ group_id=snapshot.child("group_id").getValue(String.class);
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
                 recyclerView = view.findViewById(R.id.recyclerView);
                 recyclerView.setLayoutManager(layoutManager);
+                mNames.add("All");
+                mImageUrls.add("https://firebasestorage.googleapis.com/v0/b/groupy-8f7ec.appspot.com/o/388-3882701_distributor-login-orange-group-icon-clipart.png?alt=media&token=61aa7c97-f16a-41ec-b1d8-82e749b43129");
+                uids.add("0");
                 getInfo();
 
             }
@@ -185,14 +194,19 @@ group_id=snapshot.child("group_id").getValue(String.class);
             public void onDataChange(DataSnapshot snapshot) {
                 mNames.clear();
                 mImageUrls.clear();
+                uids.clear();
+                mNames.add("All");
+                uids.add("0");
+                mImageUrls.add("https://firebasestorage.googleapis.com/v0/b/groupy-8f7ec.appspot.com/o/388-3882701_distributor-login-orange-group-icon-clipart.png?alt=media&token=61aa7c97-f16a-41ec-b1d8-82e749b43129");
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     //Toast.makeText(Home.this,"this"+postSnapshot.getValue(String.class),Toast.LENGTH_LONG).show();
 
                     String uid=(postSnapshot.getKey());
                     if(uid.length()>7) {
+                        uids.add(postSnapshot.child("uid").getValue(String.class));
                         mNames.add(postSnapshot.child("name").getValue(String.class));
                         mImageUrls.add(postSnapshot.child("photourl").getValue(String.class));
-                        RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mNames, mImageUrls);
+                        RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mNames, mImageUrls,uids, Main.this);
                         recyclerView.setAdapter(adapter);
                     }
                 }
@@ -203,14 +217,18 @@ group_id=snapshot.child("group_id").getValue(String.class);
         });
         // initRecyclerView();
     }
-    public void getuid(View view )
-    {
 
 
 
+    void setAdapter() {
+        int position=viewPager.getCurrentItem();
+        FragmentAdapter pagerAdapter = new FragmentAdapter(getActivity(),getChildFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+        // when notify then set manually current position.v
+
+        viewPager.setCurrentItem(position);
+        pagerAdapter.notifyDataSetChanged();
     }
-
-
 
 
 
