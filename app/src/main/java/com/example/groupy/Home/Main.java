@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.groupy.EditDetails;
 import com.example.groupy.Notes.NotesMain;
 import com.example.groupy.R;
+import com.example.groupy.UserLocation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -78,7 +79,30 @@ public class Main extends Fragment {
                 intent.putExtra("uid",uid);
                 startActivity(intent);
             }
+
+
+
+
+
         });
+
+
+        Button mylocation = view.findViewById(R.id.mylocation);
+        mylocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(), UserLocation.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+        ;
+
+
+
+
 
 
 

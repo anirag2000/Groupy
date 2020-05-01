@@ -13,6 +13,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -29,6 +30,7 @@ import androidx.core.app.NotificationManagerCompat;
 import com.bumptech.glide.Glide;
 import com.example.groupy.R;
 import com.mikhaellopez.circularimageview.CircularImageView;
+
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallState;
 
@@ -53,6 +55,9 @@ CircularImageView profilepic;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        //
         this.getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
                         WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
@@ -61,14 +66,22 @@ CircularImageView profilepic;
                         WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                         WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //
+
+
         setContentView(R.layout.incommingcall_layout);
+        //initialize all the views
         initView();
+        //set up microphone sensors
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        //phones proximity sensor
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-Intent intent=getIntent();
+        Intent intent=getIntent();
+        //incoming call information stored in call
         call = Apps.callClient.getCall(getIntent().getStringExtra("callid"));
         isIncomming=getIntent().getBooleanExtra("incomming", true);
         if(isIncomming) {
+            //if u are getting a call load up the layout
             setBlinking(mCallingNotify, true);
             mCallingStatus.setText("Call From ");
             String name=intent.getStringExtra("name");
@@ -80,6 +93,7 @@ Intent intent=getIntent();
             UiUtils.setFullscreen(this, true);
             r.play();
         }else{
+            //if u are the one calling
             UiUtils.setFullscreen(this, false);
             mCallingStatus.setText("Calling");
             mCallingAnswer.setVisibility(View.GONE);
@@ -106,6 +120,7 @@ Intent intent=getIntent();
 
     @Override
     public void onClick(View v) {
+        //which button was clicked
         switch (v.getId()) {
             default:
                 break;
