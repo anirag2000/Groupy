@@ -55,6 +55,13 @@ public class Location extends Fragment implements OnMapReadyCallback {
 
         if(!Apps.position.equals('0')) {
 
+
+
+
+
+
+
+
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
             if (mapFragment != null) {
@@ -120,10 +127,10 @@ public class Location extends Fragment implements OnMapReadyCallback {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 lat=dataSnapshot.child("latitude").getValue(Double.class);
                 lon=dataSnapshot.child("longitude").getValue(Double.class);
-                sydney= new LatLng(lat, lon);
-                //Toast.makeText(getContext(),lat.toString()+lon.toString(),Toast.LENGTH_LONG).show();
-                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+               sydney= new LatLng(lat, lon);
+               //Toast.makeText(getContext(),lat.toString()+lon.toString(),Toast.LENGTH_LONG).show();
+              mMap.addMarker(new MarkerOptions().position(sydney).title("You're Friend's Location"));
+               mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
                 Log.e("the pointer","is here");
 
             }
@@ -134,18 +141,19 @@ public class Location extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+//            final Handler handler = new Handler();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//
+//                    mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//                    Log.e("the pointer", "is here");
+//
+//
+//                }
+//            }, 1000);
 
-//                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-//                Log.e("the pointer","is here");
-
-
-            }
-        }, 3000);
 
 
 
