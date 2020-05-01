@@ -1,11 +1,5 @@
 package com.example.groupy;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -15,16 +9,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
-import com.example.groupy.Messenger.MessagingActivity;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,6 +48,7 @@ String final_uri;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_details);
         photo=findViewById(R.id.imageView3);
+
         Intent intent=getIntent();
         AlertDialog.Builder builder = new AlertDialog.Builder(EditDetails.this);
         builder.setCancelable(false); // if you want user to wait for some process to finish,
@@ -73,6 +70,7 @@ String final_uri;
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 final EditText taskEditText = new EditText(EditDetails.this);
                 AlertDialog dialog = new AlertDialog.Builder(EditDetails.this)
                         .setTitle("Enter Your Name")

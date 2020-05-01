@@ -8,15 +8,19 @@ import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.calling.CallClient;
 
+
 public class Apps extends Application {
     public static String USER_ID;
     //current user's sinch
     public static SinchClient sinchClient;
     //incoming/outgoing user's sinch
     public static CallClient callClient;
+    public static String position="0";
+
 
     @Override
     public void onCreate() {
+
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         super.onCreate();
 

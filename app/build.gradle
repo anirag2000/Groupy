@@ -58,8 +58,9 @@ dependencies {
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC2'
     implementation 'com.google.firebase:firebase-messaging:20.1.5'
     implementation 'com.jakewharton.rxbinding:rxbinding:0.4.0'
-    compile(name:'sinch-android-rtc', version:'+', ext:'aar')
+    compile(name: 'sinch-android-rtc', version: '+', ext: 'aar')
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation "xyz.schwaab:avvylib:1.0.0"
 
 }
