@@ -22,9 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.groupy.EditDetails;
+import com.example.groupy.FusedLocation;
 import com.example.groupy.HomeFragments.FragmentAdapter;
 import com.example.groupy.Notes.NotesMain;
 import com.example.groupy.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -52,6 +56,14 @@ public class Main extends Fragment  {
     private ArrayList<String> mImageUrls = new ArrayList<>();
     private ArrayList<String >uids=new ArrayList<>();
     AlertDialog dialog;
+    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("RecentLocation");
+    FirebaseUser currentuser= FirebaseAuth.getInstance().getCurrentUser();
+
+
+    Double lat;
+    Double lon;
+
+
 TabLayout tabLayout;
 
     public Main() {
@@ -84,6 +96,22 @@ TabLayout tabLayout;
         tabLayout.getTabAt(2).setIcon(R.drawable.loaction);
         tabLayout.getTabAt(3).setIcon(R.drawable.photos);
         tabLayout.getTabAt(4).setIcon(R.drawable.documents );
+
+
+
+        //adding the person's recent location
+        FusedLocation fusedLocation = new FusedLocation(getContext(), location -> {
+            //Do as you wish with location here
+             lat=location.getLatitude();
+             lon=location.getLongitude();
+        });
+        fusedLocation.getCurrentLocation(3);
+
+        reference.child(currentuser.getUid()).child("latitude").setValue(lat);
+        reference.child(currentuser.getUid()).child("longitude").setValue(lon);
+
+
+
 
         Button button3=view.findViewById(R.id.button3);
         button3.setOnClickListener(new View.OnClickListener() {

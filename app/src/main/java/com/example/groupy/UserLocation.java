@@ -4,6 +4,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -39,7 +40,7 @@ public class UserLocation extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_location);
+        setContentView(R.layout.fragment_location);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -66,6 +67,11 @@ public class UserLocation extends FragmentActivity implements OnMapReadyCallback
 
 
 
+        String user;
+        Intent get=getIntent();
+        user=get.getStringExtra("userid");
+
+
 
             FusedLocation fusedLocation = new FusedLocation(getApplicationContext(), location -> {
                 //Do as you wish with location here
@@ -73,24 +79,12 @@ public class UserLocation extends FragmentActivity implements OnMapReadyCallback
                 lon=location.getLongitude();
                 Log.e("seting location",lon.toString()+lat.toString());
                 LatLng sydney = new LatLng(lat, lon);
-                reference.child(currentuser.getUid()).child("latitude").setValue(lat);
-                reference.child(currentuser.getUid()).child("longitude").setValue(lon);
+                reference.child(user).child("latitude").setValue(lat);
+                reference.child(user).child("longitude").setValue(lon);
 
                 mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             });
         fusedLocation.getCurrentLocation(3);
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }
