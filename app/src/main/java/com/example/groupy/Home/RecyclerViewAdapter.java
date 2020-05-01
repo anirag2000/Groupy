@@ -1,7 +1,7 @@
 package com.example.groupy.Home;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,21 +67,34 @@ notifyDataSetChanged();
             }
         });
         if(index==position){
-            holder.image.setBorderColor(R.drawable.red);
-            holder.image.setBorderThickness(15);
+
+
             holder.image.setAnimating(true);
-           holder.image.setHighlightBorderColor(Color.GREEN);
-            holder.image.setHighlightBorderColorEnd(Color.CYAN);holder.image.setNumberOfArches(10);
+
+          holder.image.setNumberOfArches(10);
+          holder.image.setHighlighted(true);
             holder.image.setTotalArchesDegreeArea(360);
 
             Apps.position=uids.get(position);
 
        main_context.setAdapter();
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    holder.image.setAnimating(false);
+
+
+
+                }
+            }, 750);
         }
         else
         {
+            holder.image.setHighlighted(false);
+            holder.image.setAnimating(false);
 
-            holder.image.setBorderThickness(-1);
         }
     }
 

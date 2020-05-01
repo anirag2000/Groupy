@@ -52,7 +52,7 @@ public class Main extends Fragment  {
     private ArrayList<String> mImageUrls = new ArrayList<>();
     private ArrayList<String >uids=new ArrayList<>();
     AlertDialog dialog;
-
+TabLayout tabLayout;
 
     public Main() {
         // Required empty public constructor
@@ -77,9 +77,13 @@ public class Main extends Fragment  {
         FragmentAdapter fragmentAdapter=new FragmentAdapter(getActivity(),getChildFragmentManager());
         viewPager.setAdapter(fragmentAdapter);
         fragmentAdapter.notifyDataSetChanged();
-        TabLayout tabLayout=view.findViewById(R.id.tabLayout);
+        tabLayout=view.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
-
+        tabLayout.getTabAt(0).setIcon(R.drawable.profile_tab);
+        tabLayout.getTabAt(1).setIcon(R.drawable.notes);
+        tabLayout.getTabAt(2).setIcon(R.drawable.loaction);
+        tabLayout.getTabAt(3).setIcon(R.drawable.photos);
+        tabLayout.getTabAt(4).setIcon(R.drawable.documents );
 
         Button button3=view.findViewById(R.id.button3);
         button3.setOnClickListener(new View.OnClickListener() {
@@ -228,6 +232,11 @@ group_id=snapshot.child("group_id").getValue(String.class);
 
         viewPager.setCurrentItem(position);
         pagerAdapter.notifyDataSetChanged();
+        tabLayout.getTabAt(0).setIcon(R.drawable.profile_tab);
+        tabLayout.getTabAt(1).setIcon(R.drawable.notes);
+        tabLayout.getTabAt(2).setIcon(R.drawable.loaction);
+        tabLayout.getTabAt(3).setIcon(R.drawable.photos);
+        tabLayout.getTabAt(4).setIcon(R.drawable.documents );
     }
 
 

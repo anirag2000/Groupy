@@ -22,33 +22,41 @@ public class FragmentAdapter  extends FragmentStatePagerAdapter {
             return new Profile();
         } else if (position == 1){
             return new Notes();
-        } else  {
+        } else if(position==2) {
             return new Location();
+        }
+        else if(position==3)
+        {
+return new Photos();
+        }
+        else
+        {
+            return new Document();
         }
     }
 
     // This determines the number of tabs
     @Override
     public int getCount() {
-        return 3;
+        return 5;
     }
 
     // This determines the title for each tab
-    @Override
-    public CharSequence getPageTitle(int position) {
-        // Generate title based on item position
-        switch (position) {
-            case 0:
-                return "Profile";
-            case 1:
-                return "Notes";
-            case 2:
-                return "Location";
-
-            default:
-                return null;
-        }
-    }
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//        // Generate title based on item position
+//        switch (position) {
+//            case 0:
+//                return "Profile";
+//            case 1:
+//                return "Notes";
+//            case 2:
+//                return "Location";
+//
+//            default:
+//                return null;
+//        }
+//    }
     @Override
     public int getItemPosition(Object object) {
 // POSITION_NONE makes it possible to reload the PagerAdapter

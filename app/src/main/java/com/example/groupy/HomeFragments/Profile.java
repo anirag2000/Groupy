@@ -71,6 +71,7 @@ public class Profile extends Fragment {
                             email_tv.setText(email);
                             ImageView photo = view.findViewById(R.id.imageView3);
                             Glide.with(getContext()).load(photourl).into(photo);
+
                         }
                     }
 
