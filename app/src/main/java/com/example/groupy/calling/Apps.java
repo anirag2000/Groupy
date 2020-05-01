@@ -11,7 +11,9 @@ import com.sinch.android.rtc.calling.CallClient;
 
 public class Apps extends Application {
     public static String USER_ID;
+    //current user's sinch
     public static SinchClient sinchClient;
+    //incoming/outgoing user's sinch
     public static CallClient callClient;
     public static String position="0";
 
@@ -23,6 +25,8 @@ public class Apps extends Application {
         super.onCreate();
 
         if (firebaseUser != null) {
+
+            //setting up sinch
 
             USER_ID = firebaseUser.getUid();
             sinchClient = Sinch.getSinchClientBuilder().context(this)
