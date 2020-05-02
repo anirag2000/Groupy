@@ -9,6 +9,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +42,19 @@ public class SinchService extends Service implements CallClientListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(getApplicationContext(),"startedd",Toast.LENGTH_LONG).show();
+        DatabaseReference online_status_all_users;
+        FirebaseUser firebaseUser;
+        //whats the receiver's details for the page load
+        firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+
+        //FOR ONLINE AND OFFLINE PART
+        //say your realtime database has the child `online_statuses`
+        online_status_all_users = FirebaseDatabase.getInstance().getReference().child("online_statuses");
+
+        //on each user's device when connected they should indicate e.g. `linker` should tell everyone he's snooping around
+        online_status_all_users.child(firebaseUser.getUid()).setValue("online");
+        //also when he's not doing any snooping or if snooping goes bad he should also tell
+        online_status_all_users.child(firebaseUser.getUid()).onDisconnect().setValue("offline");
         Apps.sinchClient.addSinchClientListener(new SinchClientListener() {
             public void onClientStarted(SinchClient client) {
                 callClient=client.getCallClient();
@@ -99,6 +113,17 @@ public class SinchService extends Service implements CallClientListener {
     }
     @Override
     public void onTaskRemoved(Intent rootIntent) {
+        DatabaseReference online_status_all_users;
+        FirebaseUser firebaseUser;
+        //whats the receiver's details for the page load
+        firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+
+        //FOR ONLINE AND OFFLINE PART
+        //say your realtime database has the child `online_statuses`
+        online_status_all_users = FirebaseDatabase.getInstance().getReference().child("online_statuses");
+
+        //on each user's device when connected they should indicate e.g. `linker` should tell everyone he's snooping around
+        online_status_all_users.child(firebaseUser.getUid()).setValue("offline");
         Intent restartServiceIntent = new Intent(getApplicationContext(),this.getClass());
         restartServiceIntent.setPackage(getPackageName());
         startService(restartServiceIntent);

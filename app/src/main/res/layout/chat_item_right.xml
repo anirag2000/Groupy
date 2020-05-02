@@ -24,7 +24,7 @@
             android:gravity="center|right"
             android:paddingRight="10dp"
             android:text="TextView"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/textmessage"
@@ -39,7 +39,7 @@
             android:paddingRight="18dp"
             android:paddingBottom="15dp"
             android:textColor="#fff"
-            tools:text="Lorem ipsum si dolor" />
+            tools:text="WTF is this" />
 
 
     </LinearLayout>

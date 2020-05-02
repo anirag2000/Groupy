@@ -1,8 +1,11 @@
 package com.example.groupy.Messenger;
 
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +42,8 @@ import com.example.groupy.Service.Token;
 import com.example.groupy.User_details;
 import com.example.groupy.calling.Apps;
 import com.example.groupy.calling.IncommingCallActivity;
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -48,6 +54,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -69,6 +79,11 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
 public class MessagingActivity extends AppCompatActivity {
+    Uri downloadUrl;
+    String final_uri;
+    ImageView photo;
+    StorageReference  mStorageRef;
+    Dialog dialog;
     static int left;
     static int right;
     CircleImageView rimage;
@@ -84,6 +99,7 @@ public class MessagingActivity extends AppCompatActivity {
     ImageButton send;
     EditText message;
     String token;
+    String userid;
  String userpicurl;
  Timer timer;
     long DELAY;
@@ -102,6 +118,7 @@ TextView t_text;
         databaseReference.child(firebaseUser.getUid()).setValue(obj);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +127,22 @@ TextView t_text;
         right = 0;
 t_image=findViewById(R.id.circleimage);
 t_text=findViewById(R.id.username);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MessagingActivity.this);
+        builder.setCancelable(false); // if you want user to wait for some process to finish,
+        builder.setView(R.layout.layout_loading_dialog);
+        dialog= builder.create();
+        ImageButton imageButton=findViewById(R.id.camera);
+        imageButton.setOnClickListener(v -> {
+
+
+            CropImage.activity()
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .start(MessagingActivity.this);
+        });
+
+
+
+
         ImageButton back=findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,7 +191,7 @@ t_text=findViewById(R.id.username);
         recyclerView.setAdapter(messageAdapter);
 
         //loading the page
-        final String userid = intent.getStringExtra("userid");
+         userid = intent.getStringExtra("userid");
         reference = database.getReference("Users");
         String currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -344,7 +377,7 @@ t_text=findViewById(R.id.username);
         }
 
 
-        Chat chat = new Chat(reciever, from, message, date_string);
+        Chat chat = new Chat(reciever, from, message, date_string,"text");
 
         reference.child("Chats").push().setValue(chat);
 
@@ -532,6 +565,80 @@ t_text=findViewById(R.id.username);
         }
 
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+//
+
+
+
+//
+
+
+
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            dialog.show();
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri Result_uri = result.getUri();
+RandomString randomString=new RandomString();
+String push=randomString.generate();
+StorageReference mstorage= FirebaseStorage.getInstance().getReference();
+                StorageReference ref = mstorage.child(firebaseUser.getUid()).child("pictures").child(push+".jpg");
+                ref.putFile(Result_uri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                    downloadUrl = uri;
+                    final_uri = uri.toString();
+
+                    if (data != null) {
+                        //photo.setImageURI(Result_uri);
+                        dialog.hide();
+                        DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
+                        //reference.child("Users").child(firebaseUser.getUid()).child("photourl").setValue(final_uri);
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        Date date = new Date();
+                        String date_string = dateFormat.format(date); //2016/11/16 12:08:43
+                        reference = database.getReference();
+
+
+                        Chat chat = new Chat(userid, firebaseUser.getUid(), final_uri, date_string,"image");
+
+                        reference.child("Chats").push().setValue(chat);
+
+
+
+
+                    }
+                })).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        dialog.hide();
+                    }
+                }).addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                       dialog.hide();
+                    }
+                });
+            }
+            else
+            {
+                dialog.hide();
+            }
+        }
+        else
+        {
+            dialog.hide();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+
+
+
     }
 
 
@@ -545,6 +652,8 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
+    public static final int IMG_TYPE_LEFT = 2;
+    public static final int IMG_TYPE_RIGHT = 3;
     String currentuserphoto;
     private Context mContext;
     private List<Chat> texts;
@@ -575,8 +684,15 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
             View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_right, parent, false);
             return new ChatAdapter.viewholder(view);
-        } else {
+        } else if (viewType == MSG_TYPE_LEFT) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left, parent, false);
+            return new ChatAdapter.viewholder(view);
+
+        } else if (viewType == IMG_TYPE_LEFT) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.image_left, parent, false);
+            return new ChatAdapter.viewholder(view);
+        } else  {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.image_right, parent, false);
             return new ChatAdapter.viewholder(view);
         }
     }
@@ -584,8 +700,13 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
     @Override
     public void onBindViewHolder(@NonNull viewholder holder, int position) {
         final Chat chat = texts.get(position);
-
-        holder.textmessage.setText(chat.getMessage().trim());
+if(chat.type.equals("text")) {
+    holder.textmessage.setText(chat.getMessage().trim());
+}
+else
+{
+    Glide.with(mContext).load(chat.getMessage()).into(holder.chat_image);
+}
 
         String time_unformatted = chat.getDate().split(" ")[1];
         String time_formatted[] = time_unformatted.split(":");
@@ -609,7 +730,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
                     MessagingActivity.left = 0;
                     //Glide.with(mContext).load(currentuserphoto).into(holder.rimage);
 
-                } else if (type == MSG_TYPE_LEFT && MessagingActivity.left == 0) {
+                } else if ((type == MSG_TYPE_LEFT||type==IMG_TYPE_LEFT) && MessagingActivity.left == 0) {
 
                     MessagingActivity.left = MessagingActivity.left + 1;
                     MessagingActivity.right = 0;
@@ -664,6 +785,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
         public CircleImageView rimage;
         public TextView textmessage;
         public TextView date;
+        public  ImageView chat_image;
 
         public viewholder(View itemView) {
             super(itemView);
@@ -672,6 +794,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
             //image=itemView.findViewById(R.id.rimage);
             date = itemView.findViewById(R.id.date);
             date.setVisibility(View.GONE);
+            chat_image=itemView.findViewById(R.id.image);
 
         }
 
@@ -681,14 +804,74 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
     public int getItemViewType(int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (texts.get(position).getSender().equals(firebaseUser.getUid())) {
-            return MSG_TYPE_RIGHT;
+
+            if(texts.get(position).getType().equals("text"))
+            {
+                return MSG_TYPE_RIGHT;
+            }
+            else
+            {
+                return IMG_TYPE_RIGHT;
+            }
+
+
         } else {
-            return MSG_TYPE_LEFT;
+
+            if(texts.get(position).getType().equals("text"))
+            {
+                return MSG_TYPE_LEFT;
+            }
+            else
+            {
+                return IMG_TYPE_LEFT;
+            }
+
         }
 
 
     }
 }
+class RandomString {
+
+    // function to generate a random string of length n
+    static String getAlphaNumericString(int n) {
+
+        // chose a Character random from this String
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "0123456789"
+                + "abcdefghijklmnopqrstuvxyz";
+
+        // create StringBuffer size of AlphaNumericString
+        StringBuilder sb = new StringBuilder(n);
+
+        for (int i = 0; i < n; i++) {
+
+            // generate a random number between
+            // 0 to AlphaNumericString variable length
+            int index
+                    = (int) (AlphaNumericString.length()
+                    * Math.random());
+
+            // add Character one by one in end of sb
+            sb.append(AlphaNumericString
+                    .charAt(index));
+        }
+
+        return sb.toString();
+    }
+
+    String generate() {
+
+        // Get the size n
+        int n = 20;
+
+        // Get and display the alphanumeric string
+        return (RandomString
+                .getAlphaNumericString(n));
+    }
+}
+
+
 
 
 

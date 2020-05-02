@@ -4,13 +4,11 @@ public class Chat {
     String reciever;
     String sender;
     String message;
-
-
-
-
     String date;
+    String type;
 
-    public Chat(String reciever, String sender, String message,String date) {
+    public Chat(String reciever, String sender, String message,String date,String type) {
+        this.type=type;
         this.reciever = reciever;
         this.sender = sender;
         this.message = message;
@@ -48,5 +46,13 @@ public class Chat {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
