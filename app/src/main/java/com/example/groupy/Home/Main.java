@@ -53,7 +53,8 @@ public class Main extends Fragment  {
     private ArrayList<String> mImageUrls = new ArrayList<>();
     private ArrayList<String >uids=new ArrayList<>();
     AlertDialog dialog;
-    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("RecentLocation");
+    DatabaseReference reference;
+
     FirebaseUser currentuser= FirebaseAuth.getInstance().getCurrentUser();
 
 
@@ -72,8 +73,8 @@ TabLayout tabLayout;
                              Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // Inflate the layout for this fragment
-
-
+       reference = FirebaseDatabase.getInstance().getReference("RecentLocation");
+reference.child("baiavb").setValue("baivab");
 
 
         return inflater.inflate(R.layout.fragment_main, container, false);
@@ -101,11 +102,12 @@ TabLayout tabLayout;
             //Do as you wish with location here
              lat=location.getLatitude();
              lon=location.getLongitude();
+            reference.child(currentuser.getUid()).child("latitude").setValue(lat);
+            reference.child(currentuser.getUid()).child("longitude").setValue(lon);
+
         });
         fusedLocation.getCurrentLocation(3);
 
-        reference.child(currentuser.getUid()).child("latitude").setValue(lat);
-        reference.child(currentuser.getUid()).child("longitude").setValue(lon);
 
 
 

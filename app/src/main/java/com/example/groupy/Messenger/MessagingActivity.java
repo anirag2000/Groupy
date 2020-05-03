@@ -1,5 +1,6 @@
 package com.example.groupy.Messenger;
 
+import android.animation.Animator;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
@@ -28,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -100,6 +103,7 @@ public class MessagingActivity extends AppCompatActivity {
     LinearLayoutManager linearLayoutManager;
     ImageButton send;
     EditText message;
+    int draw_toggle=0;
     String token;
     String userid;
  String userpicurl;
@@ -143,20 +147,43 @@ t_text=findViewById(R.id.username);
         });
 
 ImageButton draw=findViewById(R.id.imageView8);
+ImageButton camera=findViewById(R.id.camera);
 draw.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View v) {
-        DrawableView drawableView=findViewById(R.id.drawable_view);
-        drawableView.setVisibility(View.VISIBLE);
-        DrawableViewConfig config = new DrawableViewConfig();
-        config.setStrokeColor(getResources().getColor(android.R.color.black));
-        config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
-        config.setStrokeWidth(15.0f);
-        config.setMinZoom(1.0f);
-        config.setMaxZoom(3.0f);
-        config.setCanvasHeight(1080);
-        config.setCanvasWidth(1920);
-        drawableView.setConfig(config);
+        draw_toggle=draw_toggle+1;
+        if(draw_toggle%2!=0) {
+            DrawableView drawableView = findViewById(R.id.drawable_view);
+            ConstraintLayout constraintLayout=findViewById(R.id.messaging);
+            int x = constraintLayout.getRight();
+            int y = constraintLayout.getBottom();
+
+            int startRadius = 0;
+            int endRadius = (int) Math.hypot(300, 300);
+
+            Animator anim = ViewAnimationUtils.createCircularReveal(drawableView, x, y, startRadius, endRadius);
+            anim.start();
+            drawableView.setVisibility(View.VISIBLE);
+
+            DrawableViewConfig config = new DrawableViewConfig();
+            config.setStrokeColor(getResources().getColor(android.R.color.black));
+            config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
+            config.setStrokeWidth(10.0f);
+            config.setMinZoom(1.0f);
+            config.setMaxZoom(3.0f);
+            config.setCanvasHeight(1080);
+            config.setCanvasWidth(1920);
+            drawableView.setConfig(config);
+            camera.setVisibility(View.GONE);
+            draw.setImageResource(R.drawable.no_draw);
+        }
+        else {
+            DrawableView drawableView = findViewById(R.id.drawable_view);
+            drawableView.setVisibility(View.GONE);
+            camera.setVisibility(View.VISIBLE);
+            draw.setImageResource(R.drawable.draw);
+
+        }
     }
 });
 
