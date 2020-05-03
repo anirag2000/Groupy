@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.groupy.Home.Home;
 import com.example.groupy.R;
+import com.example.groupy.calling.Apps;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.sinch.android.rtc.SinchClient;
@@ -28,12 +29,13 @@ public class launcher extends AppCompatActivity {
         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentFirebaseUser== null) {
+
             Intent intent = new Intent(launcher.this, MainActivity.class);
             startActivity(intent);
         } else {
 
 
-
+            Apps.uid=currentFirebaseUser.getUid();
 
 
             Intent intent = new Intent(launcher.this, Home.class);

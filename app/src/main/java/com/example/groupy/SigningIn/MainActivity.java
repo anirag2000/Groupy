@@ -1,8 +1,5 @@
 package com.example.groupy.SigningIn;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,8 +11,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.groupy.Home.Home;
 import com.example.groupy.R;
+import com.example.groupy.calling.Apps;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -39,15 +40,13 @@ import java.util.concurrent.TimeUnit;
 //Sign in page
 
 
-
-
 public class MainActivity extends AppCompatActivity {
     ProgressBar pb;
     String phone_string;
     FirebaseAuth mAuth;
-    String code;
+
     String verificationID;
-    PhoneAuthCredential phoneAuthCredential;
+
     TextView waiting_text_view;
     TextView sign_in_with_textview;
     LinearLayout thirdparty;
@@ -86,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         ///google
 
-
+//remove all the ther buttons when waiting for notification
         cancel.setVisibility(View.INVISIBLE);
         waiting_text_view.setVisibility(View.INVISIBLE);
         pb.setVisibility(View.INVISIBLE);
@@ -171,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                             if (isNew) {
+                                Apps.uid=FirebaseAuth.getInstance().getUid();
                                 Intent intent1 = new Intent(MainActivity.this, First_time.class);
                                 intent1.putExtra("base", "otp");
                                 startActivity(intent1);
@@ -244,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                             if (isNew) {
                                 Intent intent1 = new Intent(MainActivity.this, First_time.class);
+                                Apps.uid=FirebaseAuth.getInstance().getUid();
                                 intent1.putExtra("base", "otp");
                                 startActivity(intent1);
 
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(intent1);
                                 FirebaseUser user = mAuth.getCurrentUser();
 
-                                Toast.makeText(MainActivity.this, "VERIFICATION SUCCESSFUL", Toast.LENGTH_SHORT).show();
+
                             }
                         } else {
                             Toast.makeText(MainActivity.this, "ERROR ", Toast.LENGTH_SHORT).show();

@@ -16,6 +16,8 @@ public class Apps extends Application {
     //incoming/outgoing user's sinch
     public static CallClient callClient;
     public static String position="0";
+    public static String uid="";
+
 
 
     @Override
@@ -27,7 +29,7 @@ public class Apps extends Application {
         if (firebaseUser != null) {
 
             //setting up sinch
-
+            uid=firebaseUser.getUid();
             USER_ID = firebaseUser.getUid();
             sinchClient = Sinch.getSinchClientBuilder().context(this)
                     .applicationKey("212c7bef-7efc-4d85-8a5f-fa7bbe64534a")

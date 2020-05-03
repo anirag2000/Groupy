@@ -4,31 +4,25 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.groupy.EditDetails;
 import com.example.groupy.FusedLocation;
 import com.example.groupy.HomeFragments.FragmentAdapter;
-import com.example.groupy.Notes.NotesMain;
 import com.example.groupy.R;
+import com.example.groupy.SigningIn.MainActivity;
+import com.example.groupy.calling.Apps;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,9 +35,7 @@ import java.util.ArrayList;
 //Horizontal Recycler View
 
 
-
-
-public class Main extends Fragment  {
+public class Main extends Fragment {
 
     public String uid;
     ViewPager viewPager;
@@ -51,16 +43,15 @@ public class Main extends Fragment  {
     public RecyclerView recyclerView;
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
-    private ArrayList<String >uids=new ArrayList<>();
+    private ArrayList<String> uids_list = new ArrayList<>();
     AlertDialog dialog;
-    FirebaseUser currentuser= FirebaseAuth.getInstance().getCurrentUser();
 
 
     Double lat;
     Double lon;
 
 
-TabLayout tabLayout;
+    TabLayout tabLayout;
 
     public Main() {
         // Required empty public constructor
@@ -69,87 +60,46 @@ TabLayout tabLayout;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        // Inflate the layout for this fragment
+
 
 
         //adding the person's recent location
         FusedLocation fusedLocation = new FusedLocation(getContext(), location -> {
             //Do as you wish with location here
-            lat=location.getLatitude();
-            lon=location.getLongitude();
-            DatabaseReference reference=FirebaseDatabase.getInstance().getReference("RecentLocation");
-            reference.child(currentuser.getUid()).child("latitude").setValue(lat);
-            reference.child(currentuser.getUid()).child("longitude").setValue(lon);
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("RecentLocation");
+            reference.child(Apps.uid).child("latitude").setValue(lat);
+            reference.child(Apps.uid).child("longitude").setValue(lon);
         });
         //get the location now
         fusedLocation.getCurrentLocation(3); // 3 times for accuracy
 
 
-
-
-
-
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
-       viewPager =view.findViewById(R.id.viewPager);
-        FragmentAdapter fragmentAdapter=new FragmentAdapter(getActivity(),getChildFragmentManager());
+        viewPager = view.findViewById(R.id.viewPager);
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getActivity(), getChildFragmentManager());
         viewPager.setAdapter(fragmentAdapter);
         fragmentAdapter.notifyDataSetChanged();
-        tabLayout=view.findViewById(R.id.tabLayout);
+        tabLayout = view.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.profile_tab);
         tabLayout.getTabAt(1).setIcon(R.drawable.notes);
         tabLayout.getTabAt(2).setIcon(R.drawable.loaction);
         tabLayout.getTabAt(3).setIcon(R.drawable.photos);
-        tabLayout.getTabAt(4).setIcon(R.drawable.documents );
+        tabLayout.getTabAt(4).setIcon(R.drawable.documents);
 
 
 
 
 
 
-        Button button3=view.findViewById(R.id.button3);
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(getContext(), EditDetails.class);
-                intent.putExtra("group_code",group_id);
-                intent.putExtra("uid",uid);
-                startActivity(intent);
-            }
-        });
-
-
-
-/////for toasting group id//////////////////
-
-        Button button2=view.findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String muid=FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DatabaseReference reference=FirebaseDatabase.getInstance().getReference("Users").child(muid).child("group_id");
-                reference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String group=dataSnapshot.getValue(String.class);
-                        Toast.makeText(getContext(),group,Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        });
-        /////for toasting group id//////////////////
 
 
 
@@ -157,42 +107,48 @@ TabLayout tabLayout;
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false); // if you want user to wait for some process to finish,
         builder.setView(R.layout.layout_loading_dialog);
-       dialog= builder.create();
-        FirebaseUser currentuser=FirebaseAuth.getInstance().getCurrentUser();
+        dialog = builder.create();
 
-        uid=currentuser.getUid();
-        Button button=view.findViewById(R.id.notes);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(getContext(), NotesMain.class);
-                intent.putExtra("group_code",group_id);
-                startActivity(intent);
-            }
-        });
 
-        Log.w("about to  workkkk","");
-        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentFirebaseUser!= null) {
-            uid=currentFirebaseUser.getUid();
-            Log.w("workkkk",uid);
-        } else {
-//            Intent intent = new Intent(getContext(), MainActivity.class);
-//            startActivity(intent);
+
+        ///for notes/////////////////////////////////////////
+//        Button button = view.findViewById(R.id.notes);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getContext(), NotesMain.class);
+//                intent.putExtra("group_code", group_id);
+//                startActivity(intent);
+//            }
+//        });
+
+
+        ////if user id is empty go to mainactivity for registration
+
+
+        if (Apps.uid.trim().isEmpty()) {
+            Intent intent=new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
+
         }
+        else
+        {
+            uid=Apps.uid;
+        }
+        //////////
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
         ref.child("Users").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-group_id=snapshot.child("group_id").getValue(String.class);
+                group_id = snapshot.child("group_id").getValue(String.class);
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
                 recyclerView = view.findViewById(R.id.recyclerView);
                 recyclerView.setLayoutManager(layoutManager);
                 mNames.add("All");
-                mImageUrls.add("https://firebasestorage.googleapis.com/v0/b/groupy-8f7ec.appspot.com/o/388-3882701_distributor-login-orange-group-icon-clipart.png?alt=media&token=61aa7c97-f16a-41ec-b1d8-82e749b43129");
-                uids.add("0");
+                mImageUrls.add("https://firebasestorage.googleapis.com/v0/b/groupy-8f7ec.appspot.com/o/388-3882701_distributor-login-orange-group-icon-clipart.png?alt=media&token=590055a5-4646-4fd5-930c-bfbd095b1121");
+                uids_list.add("0");
                 getInfo();
 
             }
@@ -205,14 +161,13 @@ group_id=snapshot.child("group_id").getValue(String.class);
 
         });
 
-
-
-        ImageButton messages=view.findViewById(R.id.messages);
+//////////for sliding into dms xD////////////////////
+        ImageButton messages = view.findViewById(R.id.messages);
         messages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                ((Home)getActivity()).selectIndex(2);
+                ((Home) getActivity()).selectIndex(2);
             }
         });
         super.onViewCreated(view, savedInstanceState);
@@ -226,23 +181,24 @@ group_id=snapshot.child("group_id").getValue(String.class);
             public void onDataChange(DataSnapshot snapshot) {
                 mNames.clear();
                 mImageUrls.clear();
-                uids.clear();
+                uids_list.clear();
                 mNames.add("All");
-                uids.add("0");
-                mImageUrls.add("https://firebasestorage.googleapis.com/v0/b/groupy-8f7ec.appspot.com/o/388-3882701_distributor-login-orange-group-icon-clipart.png?alt=media&token=61aa7c97-f16a-41ec-b1d8-82e749b43129");
+                uids_list.add("0");
+                mImageUrls.add("https://firebasestorage.googleapis.com/v0/b/groupy-8f7ec.appspot.com/o/388-3882701_distributor-login-orange-group-icon-clipart.png?alt=media&token=590055a5-4646-4fd5-930c-bfbd095b1121");
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     //Toast.makeText(Home.this,"this"+postSnapshot.getValue(String.class),Toast.LENGTH_LONG).show();
 
-                    String uid=(postSnapshot.getKey());
-                    if(uid.length()>7) {
-                        uids.add(postSnapshot.child("uid").getValue(String.class));
+                    String current_uid = (postSnapshot.getKey());
+                    if (current_uid.length() > 7) {
+                        uids_list.add(postSnapshot.child("uid").getValue(String.class));
                         mNames.add(postSnapshot.child("name").getValue(String.class));
                         mImageUrls.add(postSnapshot.child("photourl").getValue(String.class));
-                        RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mNames, mImageUrls,uids, Main.this);
+                        RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), mNames, mImageUrls, uids_list, Main.this);
                         recyclerView.setAdapter(adapter);
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
@@ -251,14 +207,11 @@ group_id=snapshot.child("group_id").getValue(String.class);
     }
 
 
-
     void setAdapter() {
-        int position=viewPager.getCurrentItem();
-        FragmentAdapter pagerAdapter = new FragmentAdapter(getActivity(),getChildFragmentManager());
+        int position = viewPager.getCurrentItem();
+        FragmentAdapter pagerAdapter = new FragmentAdapter(getActivity(), getChildFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         // when notify then set manually current position.v
-
-
 
 
         viewPager.setCurrentItem(position);
@@ -267,10 +220,8 @@ group_id=snapshot.child("group_id").getValue(String.class);
         tabLayout.getTabAt(1).setIcon(R.drawable.notes);
         tabLayout.getTabAt(2).setIcon(R.drawable.loaction);
         tabLayout.getTabAt(3).setIcon(R.drawable.photos);
-        tabLayout.getTabAt(4).setIcon(R.drawable.documents );
+        tabLayout.getTabAt(4).setIcon(R.drawable.documents);
     }
-
-
 
 
 }
