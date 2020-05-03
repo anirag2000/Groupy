@@ -4,11 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +23,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.example.groupy.Home.Home;
@@ -50,6 +56,9 @@ public class First_time extends AppCompatActivity {
     ImageView profilepic;
     Uri downloadUrl;
     Dialog dialog;
+
+
+    int storagecode=1;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -131,10 +140,70 @@ public class First_time extends AppCompatActivity {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private void requestStorage(){
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},storagecode);
+    }
+
+    private void requestLocation(){
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},storagecode);
+    }
+
+
+
+
+
+
+
+
     //storing the image
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if(ContextCompat.checkSelfPermission(First_time.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(First_time.this,"You have Granted Storage Permission", Toast.LENGTH_SHORT).show();
+
+        } else{
+
+            requestStorage();
+
+
+        }
+
+        if(ContextCompat.checkSelfPermission(First_time.this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(First_time.this,"You have Granted Location Permission", Toast.LENGTH_SHORT).show();
+        } else{
+            requestLocation();
+        }
+
+
+
+
+
+
+
+
+
 
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

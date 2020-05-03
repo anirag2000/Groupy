@@ -45,7 +45,7 @@ public class Location extends Fragment implements OnMapReadyCallback {
 
         //textView.setText("HELLLO,  Location\n"+ Apps.position);
 
-        if(!Apps.position.equals('0')) {
+
 
 
 
@@ -59,7 +59,7 @@ public class Location extends Fragment implements OnMapReadyCallback {
             if (mapFragment != null) {
                 mapFragment.getMapAsync(this);
             }
-        }
+
 
 
 

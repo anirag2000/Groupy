@@ -53,8 +53,6 @@ public class Main extends Fragment  {
     private ArrayList<String> mImageUrls = new ArrayList<>();
     private ArrayList<String >uids=new ArrayList<>();
     AlertDialog dialog;
-    DatabaseReference reference;
-
     FirebaseUser currentuser= FirebaseAuth.getInstance().getCurrentUser();
 
 
@@ -73,8 +71,23 @@ TabLayout tabLayout;
                              Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // Inflate the layout for this fragment
-       reference = FirebaseDatabase.getInstance().getReference("RecentLocation");
-reference.child("baiavb").setValue("baivab");
+
+
+        //adding the person's recent location
+        FusedLocation fusedLocation = new FusedLocation(getContext(), location -> {
+            //Do as you wish with location here
+            lat=location.getLatitude();
+            lon=location.getLongitude();
+            DatabaseReference reference=FirebaseDatabase.getInstance().getReference("RecentLocation");
+            reference.child(currentuser.getUid()).child("latitude").setValue(lat);
+            reference.child(currentuser.getUid()).child("longitude").setValue(lon);
+        });
+        //get the location now
+        fusedLocation.getCurrentLocation(3); // 3 times for accuracy
+
+
+
+
 
 
         return inflater.inflate(R.layout.fragment_main, container, false);
@@ -95,18 +108,6 @@ reference.child("baiavb").setValue("baivab");
         tabLayout.getTabAt(3).setIcon(R.drawable.photos);
         tabLayout.getTabAt(4).setIcon(R.drawable.documents );
 
-
-
-        //adding the person's recent location
-        FusedLocation fusedLocation = new FusedLocation(getContext(), location -> {
-            //Do as you wish with location here
-             lat=location.getLatitude();
-             lon=location.getLongitude();
-            reference.child(currentuser.getUid()).child("latitude").setValue(lat);
-            reference.child(currentuser.getUid()).child("longitude").setValue(lon);
-
-        });
-        fusedLocation.getCurrentLocation(3);
 
 
 
@@ -256,6 +257,9 @@ group_id=snapshot.child("group_id").getValue(String.class);
         FragmentAdapter pagerAdapter = new FragmentAdapter(getActivity(),getChildFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         // when notify then set manually current position.v
+
+
+
 
         viewPager.setCurrentItem(position);
         pagerAdapter.notifyDataSetChanged();
