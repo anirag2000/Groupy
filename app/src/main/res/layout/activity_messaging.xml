@@ -104,7 +104,7 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_above="@+id/typed_message"
+        android:layout_above="@+id/constraintLayout3"
         android:layout_below="@id/cardview"
 
         android:background="#fff"
@@ -134,65 +134,73 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView8"
-            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/insert_images" />
 
-        <EditText
-            android:id="@+id/typed_message"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
-
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="20dp"
-            android:layout_toStartOf="@+id/send"
-            android:background="@drawable/type_message"
-            android:gravity="center|left"
-            android:hint="Type your message here"
-            android:includeFontPadding="true"
-            android:padding="8dp"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/camera"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/send"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/send"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/typed_message"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
             android:id="@+id/imageView8"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:background="@android:color/transparent"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="5dp"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.923"
             app:srcCompat="@drawable/draw" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/type_message"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/camera"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/typed_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+
+                android:layout_toStartOf="@+id/send"
+                android:background="@drawable/type_message"
+                android:gravity="center|left"
+                android:hint="Type your message here"
+                android:includeFontPadding="true"
+                android:padding="8dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="5dp" />
+
+            <me.panavtec.drawableview.DrawableView
+                android:id="@+id/drawable_view"
+                android:layout_width="wrap_content"
+                android:layout_height="350dp"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/send"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/send"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -71,6 +71,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.panavtec.drawableview.DrawableView;
+import me.panavtec.drawableview.DrawableViewConfig;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -140,7 +142,23 @@ t_text=findViewById(R.id.username);
                     .start(MessagingActivity.this);
         });
 
-
+ImageButton draw=findViewById(R.id.imageView8);
+draw.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        DrawableView drawableView=findViewById(R.id.drawable_view);
+        drawableView.setVisibility(View.VISIBLE);
+        DrawableViewConfig config = new DrawableViewConfig();
+        config.setStrokeColor(getResources().getColor(android.R.color.black));
+        config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
+        config.setStrokeWidth(15.0f);
+        config.setMinZoom(1.0f);
+        config.setMaxZoom(3.0f);
+        config.setCanvasHeight(1080);
+        config.setCanvasWidth(1920);
+        drawableView.setConfig(config);
+    }
+});
 
 
         ImageButton back=findViewById(R.id.back);
