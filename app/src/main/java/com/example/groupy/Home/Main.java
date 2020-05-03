@@ -53,7 +53,6 @@ public class Main extends Fragment  {
     private ArrayList<String> mImageUrls = new ArrayList<>();
     private ArrayList<String >uids=new ArrayList<>();
     AlertDialog dialog;
-    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("RecentLocation");
     FirebaseUser currentuser= FirebaseAuth.getInstance().getCurrentUser();
 
 
@@ -72,6 +71,21 @@ TabLayout tabLayout;
                              Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // Inflate the layout for this fragment
+
+
+        //adding the person's recent location
+        FusedLocation fusedLocation = new FusedLocation(getContext(), location -> {
+            //Do as you wish with location here
+            lat=location.getLatitude();
+            lon=location.getLongitude();
+            DatabaseReference reference=FirebaseDatabase.getInstance().getReference("RecentLocation");
+            reference.child(currentuser.getUid()).child("latitude").setValue(lat);
+            reference.child(currentuser.getUid()).child("longitude").setValue(lon);
+        });
+        //get the location now
+        fusedLocation.getCurrentLocation(3); // 3 times for accuracy
+
+
 
 
 
@@ -95,17 +109,6 @@ TabLayout tabLayout;
         tabLayout.getTabAt(4).setIcon(R.drawable.documents );
 
 
-
-        //adding the person's recent location
-        FusedLocation fusedLocation = new FusedLocation(getContext(), location -> {
-            //Do as you wish with location here
-             lat=location.getLatitude();
-             lon=location.getLongitude();
-        });
-        fusedLocation.getCurrentLocation(3);
-
-        reference.child(currentuser.getUid()).child("latitude").setValue(lat);
-        reference.child(currentuser.getUid()).child("longitude").setValue(lon);
 
 
 
@@ -254,6 +257,9 @@ group_id=snapshot.child("group_id").getValue(String.class);
         FragmentAdapter pagerAdapter = new FragmentAdapter(getActivity(),getChildFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         // when notify then set manually current position.v
+
+
+
 
         viewPager.setCurrentItem(position);
         pagerAdapter.notifyDataSetChanged();
