@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,6 +48,7 @@ import com.example.groupy.calling.Apps;
 import com.example.groupy.calling.IncommingCallActivity;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -59,12 +61,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,39 +93,44 @@ public class MessagingActivity extends AppCompatActivity {
     Uri downloadUrl;
     String final_uri;
     ImageView photo;
-    StorageReference  mStorageRef;
+    ImageButton draw;
+    ImageButton camera;
+    StorageReference mStorageRef;
     Dialog dialog;
     static int left;
+    String fileUrl;
     static int right;
     CircleImageView rimage;
     CircleImageView image;
     TextView text;
     Intent intent;
+    DrawableView drawableView;
     FirebaseAuth auth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference reference;
     DatabaseReference temp;
-    FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     LinearLayoutManager linearLayoutManager;
     ImageButton send;
     EditText message;
-    int draw_toggle=0;
+    int draw_toggle = 0;
     String token;
+    String msg;
     String userid;
- String userpicurl;
- Timer timer;
+    String userpicurl;
+    Timer timer;
     long DELAY;
-CircleImageView t_image;
-TextView t_text;
+    CircleImageView t_image;
+    TextView t_text;
     APIService apiService;
-    boolean notify=false;
+    boolean notify = false;
 
     ChatAdapter messageAdapter;
     RecyclerView recyclerView;
     List<Chat> texts = new ArrayList<>();
 
-    public void updateToken(String token){
-        DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference("Tokens");
+    public void updateToken(String token) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Tokens");
         Token obj = new Token(token);
         databaseReference.child(firebaseUser.getUid()).setValue(obj);
     }
@@ -131,13 +142,13 @@ TextView t_text;
         setContentView(R.layout.activity_messaging);
         left = 0;
         right = 0;
-t_image=findViewById(R.id.circleimage);
-t_text=findViewById(R.id.username);
+        t_image = findViewById(R.id.circleimage);
+        t_text = findViewById(R.id.username);
         AlertDialog.Builder builder = new AlertDialog.Builder(MessagingActivity.this);
         builder.setCancelable(false); // if you want user to wait for some process to finish,
         builder.setView(R.layout.layout_loading_dialog);
-        dialog= builder.create();
-        ImageButton imageButton=findViewById(R.id.camera);
+        dialog = builder.create();
+        ImageButton imageButton = findViewById(R.id.camera);
         imageButton.setOnClickListener(v -> {
 
 
@@ -146,49 +157,49 @@ t_text=findViewById(R.id.username);
                     .start(MessagingActivity.this);
         });
 
-ImageButton draw=findViewById(R.id.imageView8);
-ImageButton camera=findViewById(R.id.camera);
-draw.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        draw_toggle=draw_toggle+1;
-        if(draw_toggle%2!=0) {
-            DrawableView drawableView = findViewById(R.id.drawable_view);
-            ConstraintLayout constraintLayout=findViewById(R.id.messaging);
-            int x = constraintLayout.getRight();
-            int y = constraintLayout.getBottom();
+        draw = findViewById(R.id.imageView8);
+        camera = findViewById(R.id.camera);
+        draw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                draw_toggle = draw_toggle + 1;
+                if (draw_toggle % 2 != 0) {
+                    drawableView = findViewById(R.id.drawable_view);
+                    ConstraintLayout constraintLayout = findViewById(R.id.messaging);
+                    int x = constraintLayout.getRight();
+                    int y = constraintLayout.getBottom();
 
-            int startRadius = 0;
-            int endRadius = (int) Math.hypot(300, 300);
+                    int startRadius = 0;
+                    int endRadius = (int) Math.hypot(300, 300);
 
-            Animator anim = ViewAnimationUtils.createCircularReveal(drawableView, x, y, startRadius, endRadius);
-            anim.start();
-            drawableView.setVisibility(View.VISIBLE);
+                    Animator anim = ViewAnimationUtils.createCircularReveal(drawableView, x, y, startRadius, endRadius);
+                    anim.start();
+                    drawableView.setVisibility(View.VISIBLE);
 
-            DrawableViewConfig config = new DrawableViewConfig();
-            config.setStrokeColor(getResources().getColor(android.R.color.black));
-            config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
-            config.setStrokeWidth(10.0f);
-            config.setMinZoom(1.0f);
-            config.setMaxZoom(3.0f);
-            config.setCanvasHeight(1080);
-            config.setCanvasWidth(1920);
-            drawableView.setConfig(config);
-            camera.setVisibility(View.GONE);
-            draw.setImageResource(R.drawable.no_draw);
-        }
-        else {
-            DrawableView drawableView = findViewById(R.id.drawable_view);
-            drawableView.setVisibility(View.GONE);
-            camera.setVisibility(View.VISIBLE);
-            draw.setImageResource(R.drawable.draw);
+                    DrawableViewConfig config = new DrawableViewConfig();
+                    drawableView.setBackgroundColor(getResources().getColor(android.R.color.white));
+                    config.setStrokeColor(getResources().getColor(android.R.color.black));
+                    config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
+                    config.setStrokeWidth(10.0f);
+                    config.setMinZoom(1.0f);
+                    config.setMaxZoom(3.0f);
+                    config.setCanvasHeight(540);
+                    config.setCanvasWidth(520);
+                    drawableView.setConfig(config);
+                    camera.setVisibility(View.GONE);
+                    draw.setImageResource(R.drawable.no_draw);
+                } else {
+                    DrawableView drawableView = findViewById(R.id.drawable_view);
+                    drawableView.setVisibility(View.GONE);
+                    camera.setVisibility(View.VISIBLE);
+                    draw.setImageResource(R.drawable.draw);
 
-        }
-    }
-});
+                }
+            }
+        });
 
 
-        ImageButton back=findViewById(R.id.back);
+        ImageButton back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -198,14 +209,12 @@ draw.setOnClickListener(new View.OnClickListener() {
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(MessagingActivity.this, instanceIdResult -> {
             token = instanceIdResult.getToken();
-            Log.e("This is the token",token);
+            Log.e("This is the token", token);
             updateToken(token);
         });
 
 
-        apiService= Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
-
-
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
 
         //initialize all the components on screen
@@ -214,7 +223,7 @@ draw.setOnClickListener(new View.OnClickListener() {
         send = findViewById(R.id.send);
         message = findViewById(R.id.typed_message);
         //image=findViewById(R.id.circleimage);
-        Toast.makeText(MessagingActivity.this,Apps.USER_ID,Toast.LENGTH_LONG).show();
+        Toast.makeText(MessagingActivity.this, Apps.USER_ID, Toast.LENGTH_LONG).show();
 
 
         //whats the receiver's details for the page load
@@ -223,20 +232,15 @@ draw.setOnClickListener(new View.OnClickListener() {
         intent = getIntent();
 
 
-
-
-
-
-
         recyclerView = findViewById(R.id.recyclerview);
 
-        linearLayoutManager= new LinearLayoutManager(this);
+        linearLayoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(messageAdapter);
 
         //loading the page
-         userid = intent.getStringExtra("userid");
+        userid = intent.getStringExtra("userid");
         reference = database.getReference("Users");
         String currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -255,25 +259,24 @@ draw.setOnClickListener(new View.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public boolean onLongClick(View v) {
-                        if(Apps.callClient==null){
+                        if (Apps.callClient == null) {
                             Toast.makeText(MessagingActivity.this, "Sinch Client not connected", Toast.LENGTH_SHORT).show();
 
-                        }
-                        else {
+                        } else {
                             com.sinch.android.rtc.calling.Call currentcall = Apps.callClient.callUser(userid);
                             Intent callscreen = new Intent(MessagingActivity.this, IncommingCallActivity.class);
-                            Pair[] pairs=new Pair[2];
+                            Pair[] pairs = new Pair[2];
 
-                            pairs[0]=new Pair<View,String>(t_image,"imageTransition");
-                            pairs[1]=new Pair<View,String>(t_text,"textTransition");
+                            pairs[0] = new Pair<View, String>(t_image, "imageTransition");
+                            pairs[1] = new Pair<View, String>(t_text, "textTransition");
 
-                            ActivityOptions options=ActivityOptions.makeSceneTransitionAnimation(MessagingActivity.this,pairs);
-                            callscreen.putExtra("photo",user.getPhotourl());
-                            callscreen.putExtra("name",user.getName());
-                            callscreen.putExtra("callid",currentcall.getCallId());
+                            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MessagingActivity.this, pairs);
+                            callscreen.putExtra("photo", user.getPhotourl());
+                            callscreen.putExtra("name", user.getName());
+                            callscreen.putExtra("callid", currentcall.getCallId());
                             callscreen.putExtra("incomming", false);
                             callscreen.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(callscreen,options.toBundle());
+                            startActivity(callscreen, options.toBundle());
 
                         }
                         return false;
@@ -298,19 +301,17 @@ draw.setOnClickListener(new View.OnClickListener() {
             }
         });
 
-        DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         reference.child("AddDetails").child(currentuser).child(userid).child("Typing").setValue("0");
         reference.child("AddDetails").child(currentuser).child(userid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("Typing").getValue(String.class).equals("1"))
-                {
-                    TextView typing=findViewById(R.id.typing);
+                if (dataSnapshot.child("Typing").getValue(String.class).equals("1")) {
+                    TextView typing = findViewById(R.id.typing);
                     typing.setVisibility(View.VISIBLE);
                 }
-                if(dataSnapshot.child("Typing").getValue(String.class).equals("0"))
-                {
-                    TextView typing=findViewById(R.id.typing);
+                if (dataSnapshot.child("Typing").getValue(String.class).equals("0")) {
+                    TextView typing = findViewById(R.id.typing);
                     typing.setVisibility(View.GONE);
                 }
             }
@@ -320,21 +321,17 @@ draw.setOnClickListener(new View.OnClickListener() {
 
             }
         });
-        LinearLayout linearLayout=findViewById(R.id.linearLayout2);
+        LinearLayout linearLayout = findViewById(R.id.linearLayout2);
         linearLayout.setBackgroundResource(R.drawable.red);
-         reference=FirebaseDatabase.getInstance().getReference().child("online_statuses");
+        reference = FirebaseDatabase.getInstance().getReference().child("online_statuses");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild(userid))
-                {
-                    if(dataSnapshot.child(userid).getValue(String.class).equals("online"))
-                    {
+                if (dataSnapshot.hasChild(userid)) {
+                    if (dataSnapshot.child(userid).getValue(String.class).equals("online")) {
                         linearLayout.setBackgroundResource(R.drawable.green);
-                    }
-                    else
-                    {
+                    } else {
                         linearLayout.setBackgroundResource(R.drawable.red);
                     }
                 }
@@ -347,28 +344,30 @@ draw.setOnClickListener(new View.OnClickListener() {
             }
         });
         KeyboardVisibilityEvent.setEventListener(
-               this,
+                this,
                 (KeyboardVisibilityEventListener) isOpen -> {
                     recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
 
 
                 });
 
-        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
-         timer = new Timer();
-         DELAY = 1000; // in ms
-       message.addTextChangedListener(new TextWatcher() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        timer = new Timer();
+        DELAY = 1000; // in ms
+        message.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
                                           int after) {
             }
+
             @Override
             public void onTextChanged(final CharSequence s, int start, int before,
                                       int count) {
                 databaseReference.child("AddDetails").child(userid).child(currentuser).child("Typing").setValue("1");
-                if(timer != null)
+                if (timer != null)
                     timer.cancel();
             }
+
             @Override
             public void afterTextChanged(final Editable s) {
                 //avoid triggering event when text is too short
@@ -393,9 +392,14 @@ draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String typedmessage = message.getText().toString();
-                if (!typedmessage.isEmpty()) {
-                    notify=true;
-                    sendmessage(userid, firebaseUser.getUid(), typedmessage);
+                drawableView = findViewById(R.id.drawable_view);
+                if (!typedmessage.isEmpty() || drawableView.getVisibility() == View.VISIBLE) {
+                    notify = true;
+                    try {
+                        sendmessage(userid, firebaseUser.getUid(), typedmessage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                     //keyboard closing after send
 
@@ -411,40 +415,105 @@ draw.setOnClickListener(new View.OnClickListener() {
     }
 
 
-    void sendmessage(String reciever, String from, String message) {
+    void sendmessage(String reciever, String from, String message) throws IOException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         String date_string = dateFormat.format(date); //2016/11/16 12:08:43
         reference = database.getReference();
         message.trim();
-        if (message.trim().isEmpty()) {
-            return;
+
+        drawableView = findViewById(R.id.drawable_view);
+        if (drawableView.getVisibility() == View.GONE) {
+            if (message.trim().isEmpty()) {
+                return;
+            }
+            Chat chat = new Chat(reciever, from, message, date_string, "text");
+
+            reference.child("Chats").push().setValue(chat);
+
+
+            msg = message;
+        } else {
+            drawableView.setVisibility(View.GONE);
+            camera.setVisibility(View.VISIBLE);
+            draw.setImageResource(R.drawable.draw);
+
+            Bitmap drawn_image = drawableView.obtainBitmap();
+            RandomString randomString = new RandomString();
+            String random = randomString.generate();
+            String filePath = "/storage/emulated/0/Download/" + random + ".jpg";
+
+
+            File dest = new File(filePath);
+            dialog.show();
+
+            try {
+                FileOutputStream out = new FileOutputStream(dest);
+                drawn_image.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.flush();
+                out.close();
+                Uri file = Uri.fromFile(new File(filePath));
+                StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+                StorageReference riversRef = storageRef.child("images/rivers.jpg");
+
+                riversRef.putFile(file)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // Get a URL to the uploaded content
+                                riversRef.getDownloadUrl().addOnSuccessListener(uri -> {
+
+                                    final_uri = uri.toString();
+
+
+                                    //photo.setImageURI(Result_uri);
+                                    dialog.hide();
+                                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+                                    //reference.child("Users").child(firebaseUser.getUid()).child("photourl").setValue(final_uri);
+                                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                                    Date date = new Date();
+                                    String date_string = dateFormat.format(date); //2016/11/16 12:08:43
+                                    reference = database.getReference();
+
+
+                                    Chat chat = new Chat(userid, firebaseUser.getUid(), final_uri, date_string, "image");
+
+                                    reference.child("Chats").push().setValue(chat);
+                                    msg = "Has sent a doodle";
+                                    File file = new File(filePath);
+                                    file.delete();
+
+                                    MessagingActivity.this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+
+                                    dialog.hide();
+                                });
+
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                dialog.hide();
+                            }
+                        });
+
+
+            } catch (Exception e) {
+                Toast.makeText(MessagingActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+            }
+
+
+//
         }
-
-
-        Chat chat = new Chat(reciever, from, message, date_string,"text");
-
-        reference.child("Chats").push().setValue(chat);
-
-
-
-
-
-
-
-
-
-        final String msg = message;
-
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User_details user = dataSnapshot.getValue(User_details.class);
-                if(notify) {
+                if (notify) {
                     sendNotifiaction(reciever, user.getName(), msg);
                 }
-                notify=false;
+                notify = false;
             }
 
             @Override
@@ -454,28 +523,22 @@ draw.setOnClickListener(new View.OnClickListener() {
         });
 
 
-
-
-
-
-
     }
 
 
-
-    private void sendNotifiaction(String receiver, final String username, final String message){
+    private void sendNotifiaction(String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         DatabaseReference userpic = FirebaseDatabase.getInstance().getReference("Users");
 
         Query query = tokens.orderByKey().equalTo(receiver);
 
         intent = getIntent();
-        String userid=intent.getStringExtra("userid");
+        String userid = intent.getStringExtra("userid");
 
         userpic.child(firebaseUser.getUid()).child("photourl").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userpicurl=dataSnapshot.getValue(String.class);
+                userpicurl = dataSnapshot.getValue(String.class);
             }
 
             @Override
@@ -488,9 +551,9 @@ draw.setOnClickListener(new View.OnClickListener() {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(firebaseUser.getUid(),userpicurl, message, username,
+                    Data data = new Data(firebaseUser.getUid(), userpicurl, message, username,
                             userid);
 
                     Sender sender = new Sender(data, token.getToken());
@@ -500,8 +563,8 @@ draw.setOnClickListener(new View.OnClickListener() {
                             .enqueue(new Callback<MyResponse>() {
                                 @Override
                                 public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                    if (response.code() == 200){
-                                        if (response.body().success != 1){
+                                    if (response.code() == 200) {
+                                        if (response.body().success != 1) {
                                             Toast.makeText(MessagingActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -512,7 +575,7 @@ draw.setOnClickListener(new View.OnClickListener() {
 
                                 }
 
-                });
+                            });
                 }
             }
 
@@ -524,20 +587,9 @@ draw.setOnClickListener(new View.OnClickListener() {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     private void readmessages(final String sender, final String receiver, final String imageurl, String currentuser) {
         recyclerView.setAdapter(messageAdapter);
         reference = database.getReference("Chats");
-
 
 
         reference.addChildEventListener(new ChildEventListener() {
@@ -552,7 +604,7 @@ draw.setOnClickListener(new View.OnClickListener() {
                 if (chat.getSender().equals(sender) && chat.getReciever().equals(receiver)
                         || chat.getSender().equals(receiver) && chat.getReciever().equals(sender)) {
                     texts.add(chat);
-                   //
+                    //
                     messageAdapter.notifyDataSetChanged();
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -562,15 +614,7 @@ draw.setOnClickListener(new View.OnClickListener() {
                     }, 200);
 
 
-
-
-
-
-
-
-
                 }
-
 
 
                 //The RecyclerView is a new ViewGroup that is prepared to render any adapter-based view in a similar way.
@@ -599,16 +643,15 @@ draw.setOnClickListener(new View.OnClickListener() {
             }
         });
 
-        }
-        @Override
-    public void onBackPressed()
-        {
-            super.onBackPressed();
-            supportFinishAfterTransition();
-            ActivityCompat.postponeEnterTransition(this);
-            ActivityCompat.startPostponedEnterTransition(MessagingActivity.this);
-        }
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        supportFinishAfterTransition();
+        ActivityCompat.postponeEnterTransition(this);
+        ActivityCompat.startPostponedEnterTransition(MessagingActivity.this);
+    }
 
 
     @Override
@@ -617,9 +660,7 @@ draw.setOnClickListener(new View.OnClickListener() {
 //
 
 
-
 //
-
 
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -627,10 +668,10 @@ draw.setOnClickListener(new View.OnClickListener() {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri Result_uri = result.getUri();
-RandomString randomString=new RandomString();
-String push=randomString.generate();
-StorageReference mstorage= FirebaseStorage.getInstance().getReference();
-                StorageReference ref = mstorage.child(firebaseUser.getUid()).child("pictures").child(push+".jpg");
+                RandomString randomString = new RandomString();
+                String push = randomString.generate();
+                StorageReference mstorage = FirebaseStorage.getInstance().getReference();
+                StorageReference ref = mstorage.child(firebaseUser.getUid()).child("pictures").child(push + ".jpg");
                 ref.putFile(Result_uri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                     downloadUrl = uri;
                     final_uri = uri.toString();
@@ -638,7 +679,7 @@ StorageReference mstorage= FirebaseStorage.getInstance().getReference();
                     if (data != null) {
                         //photo.setImageURI(Result_uri);
                         dialog.hide();
-                        DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
                         //reference.child("Users").child(firebaseUser.getUid()).child("photourl").setValue(final_uri);
                         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                         Date date = new Date();
@@ -646,11 +687,9 @@ StorageReference mstorage= FirebaseStorage.getInstance().getReference();
                         reference = database.getReference();
 
 
-                        Chat chat = new Chat(userid, firebaseUser.getUid(), final_uri, date_string,"image");
+                        Chat chat = new Chat(userid, firebaseUser.getUid(), final_uri, date_string, "image");
 
                         reference.child("Chats").push().setValue(chat);
-
-
 
 
                     }
@@ -662,34 +701,18 @@ StorageReference mstorage= FirebaseStorage.getInstance().getReference();
                 }).addOnCanceledListener(new OnCanceledListener() {
                     @Override
                     public void onCanceled() {
-                       dialog.hide();
+                        dialog.hide();
                     }
                 });
-            }
-            else
-            {
+            } else {
                 dialog.hide();
             }
-        }
-        else
-        {
+        } else {
             dialog.hide();
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
-
-
-
-
-    }
-
-
-
-
-
 
 
 class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
@@ -736,7 +759,7 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
         } else if (viewType == IMG_TYPE_LEFT) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.image_left, parent, false);
             return new ChatAdapter.viewholder(view);
-        } else  {
+        } else {
             View view = LayoutInflater.from(mContext).inflate(R.layout.image_right, parent, false);
             return new ChatAdapter.viewholder(view);
         }
@@ -745,13 +768,11 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
     @Override
     public void onBindViewHolder(@NonNull viewholder holder, int position) {
         final Chat chat = texts.get(position);
-if(chat.type.equals("text")) {
-    holder.textmessage.setText(chat.getMessage().trim());
-}
-else
-{
-    Glide.with(mContext).load(chat.getMessage()).into(holder.chat_image);
-}
+        if (chat.type.equals("text")) {
+            holder.textmessage.setText(chat.getMessage().trim());
+        } else {
+            Glide.with(mContext).load(chat.getMessage()).into(holder.chat_image);
+        }
 
         String time_unformatted = chat.getDate().split(" ")[1];
         String time_formatted[] = time_unformatted.split(":");
@@ -775,7 +796,7 @@ else
                     MessagingActivity.left = 0;
                     //Glide.with(mContext).load(currentuserphoto).into(holder.rimage);
 
-                } else if ((type == MSG_TYPE_LEFT||type==IMG_TYPE_LEFT) && MessagingActivity.left == 0) {
+                } else if ((type == MSG_TYPE_LEFT || type == IMG_TYPE_LEFT) && MessagingActivity.left == 0) {
 
                     MessagingActivity.left = MessagingActivity.left + 1;
                     MessagingActivity.right = 0;
@@ -808,13 +829,11 @@ else
                 }, 1000);
 
 
-         }
-       });
-        if(getItemViewType(position)==MSG_TYPE_LEFT&& position==getItemCount()-1) {
+            }
+        });
+        if (getItemViewType(position) == MSG_TYPE_LEFT && position == getItemCount() - 1) {
             holder.itemView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.anim));
-        }
-        else if(getItemViewType(position)==MSG_TYPE_RIGHT&& position==getItemCount()-1)
-        {
+        } else if (getItemViewType(position) == MSG_TYPE_RIGHT && position == getItemCount() - 1) {
             holder.itemView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.right));
         }
 
@@ -825,12 +844,37 @@ else
         return texts.size();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (texts.get(position).getSender().equals(firebaseUser.getUid())) {
+
+            if (texts.get(position).getType().equals("text")) {
+                return MSG_TYPE_RIGHT;
+            } else {
+                return IMG_TYPE_RIGHT;
+            }
+
+
+        } else {
+
+            if (texts.get(position).getType().equals("text")) {
+                return MSG_TYPE_LEFT;
+            } else {
+                return IMG_TYPE_LEFT;
+            }
+
+        }
+
+
+    }
+
     public class viewholder extends RecyclerView.ViewHolder {
         public CircleImageView image;
         public CircleImageView rimage;
         public TextView textmessage;
         public TextView date;
-        public  ImageView chat_image;
+        public ImageView chat_image;
 
         public viewholder(View itemView) {
             super(itemView);
@@ -839,43 +883,14 @@ else
             //image=itemView.findViewById(R.id.rimage);
             date = itemView.findViewById(R.id.date);
             date.setVisibility(View.GONE);
-            chat_image=itemView.findViewById(R.id.image);
+            chat_image = itemView.findViewById(R.id.image);
 
         }
-
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (texts.get(position).getSender().equals(firebaseUser.getUid())) {
-
-            if(texts.get(position).getType().equals("text"))
-            {
-                return MSG_TYPE_RIGHT;
-            }
-            else
-            {
-                return IMG_TYPE_RIGHT;
-            }
-
-
-        } else {
-
-            if(texts.get(position).getType().equals("text"))
-            {
-                return MSG_TYPE_LEFT;
-            }
-            else
-            {
-                return IMG_TYPE_LEFT;
-            }
-
-        }
-
 
     }
 }
+}
+
 class RandomString {
 
     // function to generate a random string of length n

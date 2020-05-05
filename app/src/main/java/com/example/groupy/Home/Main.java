@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -159,6 +160,11 @@ public class Main extends Fragment {
             }
 
 
+        });
+        Button drawable = view.findViewById(R.id.button4);
+        drawable.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), Main2.class);
+            startActivity(intent);
         });
 
 //////////for sliding into dms xD////////////////////

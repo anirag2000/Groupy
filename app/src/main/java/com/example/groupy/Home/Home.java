@@ -12,8 +12,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.groupy.R;
 import com.example.groupy.calling.SinchService;
 import com.example.groupy.calling.SinchStatus;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -37,8 +35,6 @@ public class Home extends AppCompatActivity  {
         startService(new Intent(this, SinchService.class));
         viewPager= findViewById(R.id.view_pager);
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-
-
 
 
 
