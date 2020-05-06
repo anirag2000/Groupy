@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sinch.android.rtc.ClientRegistration;
+import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.SinchClientListener;
 import com.sinch.android.rtc.SinchError;
@@ -55,6 +56,23 @@ public class SinchService extends Service implements CallClientListener {
         online_status_all_users.child(firebaseUser.getUid()).setValue("online");
         //also when he's not doing any snooping or if snooping goes bad he should also tell
         online_status_all_users.child(firebaseUser.getUid()).onDisconnect().setValue("offline");
+
+        if(Apps.sinchClient==null)
+        {
+            Apps.sinchClient = Sinch.getSinchClientBuilder().context(this)
+                    .applicationKey("212c7bef-7efc-4d85-8a5f-fa7bbe64534a")
+                    .applicationSecret("N8ezWXnLTEqapxuHDOYaLg==")
+                    .environmentHost("clientapi.sinch.com")
+                    .userId(Apps.uid)
+                    .build();
+            Apps.sinchClient.setSupportActiveConnectionInBackground(true);
+            Apps.sinchClient.startListeningOnActiveConnection();
+            Apps.sinchClient.setSupportCalling(true);
+        }
+
+
+
+
         Apps.sinchClient.addSinchClientListener(new SinchClientListener() {
             public void onClientStarted(SinchClient client) {
                 callClient=client.getCallClient();
