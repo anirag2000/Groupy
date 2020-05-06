@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import com.example.groupy.Home.Home;
 import com.example.groupy.R;
 import com.example.groupy.User_details;
+import com.example.groupy.calling.Apps;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,7 +60,7 @@ public class First_time extends AppCompatActivity {
     Dialog dialog;
 
 
-    int storagecode=1;
+    int permissioncode=1;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -158,12 +160,9 @@ public class First_time extends AppCompatActivity {
 
 
 
-    private void requestStorage(){
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},storagecode);
-    }
-
-    private void requestLocation(){
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},storagecode);
+    private void requestPermissions(){
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                                    Manifest.permission.ACCESS_FINE_LOCATION},permissioncode);
     }
 
 
@@ -179,31 +178,17 @@ public class First_time extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
         if(ContextCompat.checkSelfPermission(First_time.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(First_time.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED) {
 
             Toast.makeText(First_time.this,"You have Granted Storage Permission", Toast.LENGTH_SHORT).show();
 
         } else{
 
-            requestStorage();
-
-
+            requestPermissions();
+            Log.e("requesting location","checking");
         }
-
-        if(ContextCompat.checkSelfPermission(First_time.this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(First_time.this,"You have Granted Location Permission", Toast.LENGTH_SHORT).show();
-        } else{
-            requestLocation();
-        }
-
-
-
-
-
-
-
-
-
 
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

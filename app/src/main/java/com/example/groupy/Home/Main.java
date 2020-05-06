@@ -26,6 +26,7 @@ import com.example.groupy.FusedLocation;
 import com.example.groupy.HomeFragments.FragmentAdapter;
 import com.example.groupy.Notes.NotesMain;
 import com.example.groupy.R;
+import com.example.groupy.calling.Apps;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,10 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 
-//Horizontal Recycler View
-
-
-
+//Horizontal Recycler View Activi
 
 public class Main extends Fragment  {
 
@@ -186,7 +184,7 @@ TabLayout tabLayout;
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-group_id=snapshot.child("group_id").getValue(String.class);
+                group_id=snapshot.child("group_id").getValue(String.class);
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
                 recyclerView = view.findViewById(R.id.recyclerView);
                 recyclerView.setLayoutManager(layoutManager);
@@ -221,6 +219,7 @@ group_id=snapshot.child("group_id").getValue(String.class);
 
     private void getInfo() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
         ref.child("group").child("group_code").child(group_id).child("ids").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -243,9 +242,12 @@ group_id=snapshot.child("group_id").getValue(String.class);
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
+
         });
         // initRecyclerView();
     }
