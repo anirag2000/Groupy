@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.example.groupy.Home.Home;
 import com.example.groupy.R;
+import com.example.groupy.Tools.RandomString;
 import com.example.groupy.User_details;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -216,7 +217,7 @@ public class First_time extends AppCompatActivity {
                 ref.putFile(Result_uri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                     downloadUrl = uri;
                     final_uri = uri.toString();
-             dialog.hide();
+                    dialog.hide();
                     if (data != null) {
                         profilepic.setImageURI(Result_uri);
                     }
@@ -385,43 +386,5 @@ dialog.show();
 }
 
 
-class RandomString {
 
-    // function to generate a random string of length n
-    static String getAlphaNumericString(int n) {
-
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
-
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(n);
-
-        for (int i = 0; i < n; i++) {
-
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int) (AlphaNumericString.length()
-                    * Math.random());
-
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-
-        return sb.toString();
-    }
-
-    String generate() {
-
-        // Get the size n
-        int n = 6;
-
-        // Get and display the alphanumeric string
-        return (RandomString
-                .getAlphaNumericString(n));
-    }
-}
 

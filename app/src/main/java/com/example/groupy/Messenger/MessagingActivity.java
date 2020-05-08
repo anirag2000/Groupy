@@ -43,6 +43,7 @@ import com.example.groupy.Service.Data;
 import com.example.groupy.Service.MyResponse;
 import com.example.groupy.Service.Sender;
 import com.example.groupy.Service.Token;
+import com.example.groupy.Tools.RandomString;
 import com.example.groupy.User_details;
 import com.example.groupy.calling.Apps;
 import com.example.groupy.calling.IncommingCallActivity;
@@ -891,45 +892,6 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 }
 }
 
-class RandomString {
-
-    // function to generate a random string of length n
-    static String getAlphaNumericString(int n) {
-
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
-
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(n);
-
-        for (int i = 0; i < n; i++) {
-
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int) (AlphaNumericString.length()
-                    * Math.random());
-
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-
-        return sb.toString();
-    }
-
-    String generate() {
-
-        // Get the size n
-        int n = 20;
-
-        // Get and display the alphanumeric string
-        return (RandomString
-                .getAlphaNumericString(n));
-    }
-}
 
 
 
