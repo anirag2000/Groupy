@@ -28,6 +28,7 @@ import com.example.groupy.SigningIn.First_time;
 
 import com.example.groupy.Tools.RandomString;
 import com.example.groupy.Tools.img;
+import com.example.groupy.calling.Apps;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -121,7 +122,7 @@ public class Photos extends Fragment {
 
 
         //load images onto the recycler view
-        display.child("UserPictures").child(currentuser.getUid()).addChildEventListener(new ChildEventListener() {
+        display.child("UserPictures").child(Apps.position).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                // images=dataSnapshot.getValue(String.class);

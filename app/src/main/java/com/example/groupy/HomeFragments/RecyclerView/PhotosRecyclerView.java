@@ -40,7 +40,7 @@ public class PhotosRecyclerView extends RecyclerView.Adapter<PhotosRecyclerView.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         //get the image in list
- 
+
         Glide.with(mContext).load(mData.get(position).getImage()).into(holder.photos);
 
 
