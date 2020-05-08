@@ -19,7 +19,7 @@ import java.util.Random;
 
 //Notes Recycler
 
-class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder> {
+public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder> {
     private ArrayList<String> title = new ArrayList<>();
     private ArrayList<String> description = new ArrayList<>();
     private ArrayList<String> user = new ArrayList<>();

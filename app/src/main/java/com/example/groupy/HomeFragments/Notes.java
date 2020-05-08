@@ -1,63 +1,51 @@
 package com.example.groupy.HomeFragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.groupy.Notes.NotesAdapter;
+import com.example.groupy.Notes.NotesMain;
+import com.example.groupy.Notes.NotesModal;
 import com.example.groupy.R;
 import com.example.groupy.calling.Apps;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Notes#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
+
 public class Notes extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    String group_code;
+    RecyclerView recyclerView;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public Notes() {
         // Required empty public constructor
     }
 
-    TextView textView;
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Notes.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Notes newInstance(String param1, String param2) {
-        Notes fragment = new Notes();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+//     gfjyjy//group_code=intent.getStringExtra("group_code");
+//        DatabaseReference ref= FirebaseDatabase.getInstance().getReference();
+//        ref.child("USer")
+
     }
 
     @Override
@@ -69,8 +57,50 @@ public class Notes extends Fragment {
     }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-      textView=view.findViewById(R.id.textView13);
-        textView.setText("HELLLO, Notes\n"+Apps.position);
+        ArrayList<String> title = new ArrayList<>();
+        ArrayList<String> users= new ArrayList<>();
+        ArrayList<String> mdescription = new ArrayList<>();
+        DatabaseReference ref1= FirebaseDatabase.getInstance().getReference().child("group").child("group_code").child(group_code).child("notes").child(Apps.position);
+
+
+
+
+        ref1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
+
+                    NotesModal notesModal=dsp.getValue(NotesModal.class);
+                    title.add(notesModal.title);
+                    mdescription.add(notesModal.description);
+
+                    users.add(notesModal.uid);
+                    NotesAdapter adapter = new NotesAdapter(getContext(),title,mdescription,users);
+
+                    recyclerView.setAdapter(adapter);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        recyclerView = view.findViewById(R.id.recyclerview);
+        int numberOfColumns = 2;
+        int spaceInPixels = 1;
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
+
+
+        NotesAdapter adapter = new NotesAdapter(getContext(),title,mdescription,users);
+
+        recyclerView.setAdapter(adapter);
+
     }
 
 

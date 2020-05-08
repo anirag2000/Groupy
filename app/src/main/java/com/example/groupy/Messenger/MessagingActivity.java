@@ -7,7 +7,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,13 +37,13 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.bumptech.glide.Glide;
 import com.example.groupy.ColourAdapter;
-import com.example.groupy.Home.RecyclerViewAdapter;
 import com.example.groupy.R;
 import com.example.groupy.Service.Client;
 import com.example.groupy.Service.Data;
@@ -129,6 +132,7 @@ public class MessagingActivity extends AppCompatActivity {
     TextView t_text;
     APIService apiService;
     boolean notify = false;
+    int colour_rec_toggle=0;
 
     ChatAdapter messageAdapter;
     RecyclerView recyclerView;
@@ -145,24 +149,36 @@ public class MessagingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
+        config = new DrawableViewConfig();
 
 ArrayList<String> colours= new ArrayList<>();
-colours.add("#cc0018");
-colours.add("#f49a1f");
-colours.add("#f4e130");
-colours.add("#70ca1e");
-colours.add("#386906");
-colours.add("#3d84dc");
+colours.add("A");
+colours.add("B");
+
+
+
+
+
+
+
+
 colours.add("#b203c8");
+        colours.add("#3d84dc");
+        colours.add("#386906");
+        colours.add("#70ca1e");
+        colours.add("#f4e130");
+        colours.add("#f49a1f");colours.add("#cc0018");
 
 
 
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true);
         RecyclerView color_recycler= findViewById(R.id.colour_recyclerview);
         color_recycler.setLayoutManager(layoutManager);
         ColourAdapter adapter = new ColourAdapter(this, colours);
         color_recycler.setAdapter(adapter);
+        color_recycler.setVisibility(View.GONE);
 
 
 
@@ -191,39 +207,15 @@ colours.add("#b203c8");
         draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                draw_toggle = draw_toggle + 1;
-                if (draw_toggle % 2 != 0) {
-                    drawableView = findViewById(R.id.drawable_view);
-                    ConstraintLayout constraintLayout = findViewById(R.id.messaging);
-                    int x = constraintLayout.getRight();
-                    int y = constraintLayout.getBottom();
-
-                    int startRadius = 0;
-                    int endRadius = (int) Math.hypot(300, 300);
-
-                    Animator anim = ViewAnimationUtils.createCircularReveal(drawableView, x, y, startRadius, endRadius);
-                    anim.start();
-                    drawableView.setVisibility(View.VISIBLE);
-
-                    config = new DrawableViewConfig();
-                    drawableView.setBackgroundColor(getResources().getColor(android.R.color.white));
-                    config.setStrokeColor(Color.parseColor(Apps.colour));
-                    config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
-                    config.setStrokeWidth(10.0f);
-                    config.setMinZoom(1.0f);
-                    config.setMaxZoom(3.0f);
-                    config.setCanvasHeight(540);
-                    config.setCanvasWidth(520);
-                    drawableView.setConfig(config);
-                    camera.setVisibility(View.GONE);
-                    draw.setImageResource(R.drawable.no_draw);
-                } else {
-                    DrawableView drawableView = findViewById(R.id.drawable_view);
-                    drawableView.setVisibility(View.GONE);
-                    camera.setVisibility(View.VISIBLE);
-                    draw.setImageResource(R.drawable.draw);
-
+                colour_rec_toggle=colour_rec_toggle+1;
+                if(colour_rec_toggle%2==0)
+                {
+                    color_recycler.setVisibility(View.GONE);
                 }
+                else{
+                    color_recycler.setVisibility(View.VISIBLE);
+                }
+
             }
         });
 
@@ -467,7 +459,20 @@ colours.add("#b203c8");
             camera.setVisibility(View.VISIBLE);
             draw.setImageResource(R.drawable.draw);
 
+
             Bitmap drawn_image = drawableView.obtainBitmap();
+            Canvas canvas = new Canvas(drawn_image);
+
+            Paint paint = new Paint();
+            Typeface type = ResourcesCompat.getFont(this,R.font.bad_script);
+            paint.setTypeface(type);
+
+            paint.setColor(Color.parseColor(Apps.colour)); // Text Color
+            paint.setTextSize(80); // Text Size
+
+            canvas.drawText(message, 50, drawn_image.getHeight()-50, paint);
+
+
             RandomString randomString = new RandomString();
             String random = randomString.generate();
             String filePath = "/storage/emulated/0/Download/" + random + ".jpg";
@@ -513,7 +518,7 @@ colours.add("#b203c8");
                                     file.delete();
 
                                     MessagingActivity.this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
-
+    drawableView.clear();
                                     dialog.hide();
                                 });
 
@@ -744,6 +749,52 @@ colours.add("#b203c8");
     }
 
 
+    public void open_draw()
+    {
+        draw_toggle = draw_toggle + 1;
+        if (draw_toggle % 2 != 0) {
+            drawableView = findViewById(R.id.drawable_view);
+//            ConstraintLayout constraintLayout = findViewById(R.id.messaging);
+//            int x = constraintLayout.getRight();
+//            int y = constraintLayout.getBottom();
+//
+//            int startRadius = 0;
+//            int endRadius = (int) Math.hypot(300, 300);
+//
+//            Animator anim = ViewAnimationUtils.createCircularReveal(drawableView, x, y, startRadius, endRadius);
+//            anim.start();
+            drawableView.setVisibility(View.VISIBLE);
+
+
+            drawableView.setBackgroundColor(getResources().getColor(android.R.color.white));
+            config.setStrokeColor(Color.parseColor(Apps.colour));
+            //config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
+            config.setStrokeWidth(10.0f);
+            config.setMinZoom(1.0f);
+            config.setMaxZoom(3.0f);
+            config.setCanvasHeight(drawableView.getHeight()+120);
+            config.setCanvasWidth(drawableView.getWidth());
+            drawableView.setConfig(config);
+            camera.setVisibility(View.GONE);
+            draw.setImageResource(R.drawable.no_draw);
+        } else {
+            DrawableView drawableView = findViewById(R.id.drawable_view);
+            drawableView.setVisibility(View.GONE);
+            camera.setVisibility(View.VISIBLE);
+            draw.setImageResource(R.drawable.draw);
+
+        }
+    }
+    public void change_style(){
+        message=findViewById(R.id.typed_message);
+        Typeface type = ResourcesCompat.getFont(this,R.font.bad_script);
+        message.setTypeface(type);
+
+    }
+
+
+
+
 class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
 
@@ -920,7 +971,9 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 }
 public void change_colour()
 {
+    drawableView = findViewById(R.id.drawable_view);
    config.setStrokeColor(Color.parseColor(Apps.colour));
+   message.setTextColor(Color.parseColor(Apps.colour));
 }
 
 
