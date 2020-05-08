@@ -17,6 +17,7 @@ public class Apps extends Application {
     public static CallClient callClient;
     public static String position="0";
     public static String uid="";
+    public static String colour="#000000";
 
 
 

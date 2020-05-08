@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,7 +37,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import com.bumptech.glide.Glide;
+import com.example.groupy.ColourAdapter;
+import com.example.groupy.Home.RecyclerViewAdapter;
 import com.example.groupy.R;
 import com.example.groupy.Service.Client;
 import com.example.groupy.Service.Data;
@@ -91,6 +95,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
 public class MessagingActivity extends AppCompatActivity {
+    DrawableViewConfig config;
     Uri downloadUrl;
     String final_uri;
     ImageView photo;
@@ -141,6 +146,30 @@ public class MessagingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
+
+ArrayList<String> colours= new ArrayList<>();
+colours.add("#cc0018");
+colours.add("#f49a1f");
+colours.add("#f4e130");
+colours.add("#70ca1e");
+colours.add("#386906");
+colours.add("#3d84dc");
+colours.add("#b203c8");
+
+
+
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView color_recycler= findViewById(R.id.colour_recyclerview);
+        color_recycler.setLayoutManager(layoutManager);
+        ColourAdapter adapter = new ColourAdapter(this, colours);
+        color_recycler.setAdapter(adapter);
+
+
+
+
+
+
         left = 0;
         right = 0;
         t_image = findViewById(R.id.circleimage);
@@ -177,9 +206,9 @@ public class MessagingActivity extends AppCompatActivity {
                     anim.start();
                     drawableView.setVisibility(View.VISIBLE);
 
-                    DrawableViewConfig config = new DrawableViewConfig();
+                    config = new DrawableViewConfig();
                     drawableView.setBackgroundColor(getResources().getColor(android.R.color.white));
-                    config.setStrokeColor(getResources().getColor(android.R.color.black));
+                    config.setStrokeColor(Color.parseColor(Apps.colour));
                     config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
                     config.setStrokeWidth(10.0f);
                     config.setMinZoom(1.0f);
@@ -890,6 +919,12 @@ class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewholder> {
 
     }
 }
+public void change_colour()
+{
+   config.setStrokeColor(Color.parseColor(Apps.colour));
+}
+
+
 }
 
 
