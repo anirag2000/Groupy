@@ -42,9 +42,7 @@ public class Notes extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//     gfjyjy//group_code=intent.getStringExtra("group_code");
-//        DatabaseReference ref= FirebaseDatabase.getInstance().getReference();
-//        ref.child("USer")
+
 
     }
 
@@ -57,49 +55,49 @@ public class Notes extends Fragment {
     }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        ArrayList<String> title = new ArrayList<>();
-        ArrayList<String> users= new ArrayList<>();
-        ArrayList<String> mdescription = new ArrayList<>();
-        DatabaseReference ref1= FirebaseDatabase.getInstance().getReference().child("group").child("group_code").child(group_code).child("notes").child(Apps.position);
-
-
-
-
-        ref1.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
-
-                    NotesModal notesModal=dsp.getValue(NotesModal.class);
-                    title.add(notesModal.title);
-                    mdescription.add(notesModal.description);
-
-                    users.add(notesModal.uid);
-                    NotesAdapter adapter = new NotesAdapter(getContext(),title,mdescription,users);
-
-                    recyclerView.setAdapter(adapter);
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        recyclerView = view.findViewById(R.id.recyclerview);
-        int numberOfColumns = 2;
-        int spaceInPixels = 1;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
-
-
-        NotesAdapter adapter = new NotesAdapter(getContext(),title,mdescription,users);
-
-        recyclerView.setAdapter(adapter);
+//        ArrayList<String> title = new ArrayList<>();
+//        ArrayList<String> users= new ArrayList<>();
+//        ArrayList<String> mdescription = new ArrayList<>();
+//        DatabaseReference ref1= FirebaseDatabase.getInstance().getReference().child("group").child("group_code").child(group_code).child("notes").child(Apps.position);
+//
+//
+//
+//
+//        ref1.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//
+//                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
+//
+//                    NotesModal notesModal=dsp.getValue(NotesModal.class);
+//                    title.add(notesModal.title);
+//                    mdescription.add(notesModal.description);
+//
+//                    users.add(notesModal.uid);
+//                    NotesAdapter adapter = new NotesAdapter(getContext(),title,mdescription,users);
+//
+//                    recyclerView.setAdapter(adapter);
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//
+//        recyclerView = view.findViewById(R.id.recyclerview);
+//        int numberOfColumns = 2;
+//        int spaceInPixels = 1;
+//        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
+//
+//
+//        NotesAdapter adapter = new NotesAdapter(getContext(),title,mdescription,users);
+//
+//        recyclerView.setAdapter(adapter);
 
     }
 
