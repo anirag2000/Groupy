@@ -4,9 +4,10 @@ package com.example.groupy.Notes;
 //Notes Class
 
 public class NotesModal {
-    String title;
-    String description;
-    String uid;
+    public String title;
+
+    public String description;
+    public String uid;
  NotesModal(){}
     public NotesModal(String title, String description, String uid) {
         this.title = title;

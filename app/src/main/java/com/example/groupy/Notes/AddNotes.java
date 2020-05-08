@@ -73,7 +73,7 @@ AlertDialog dialog;
                 if(!title_text.isEmpty()&& !description_text.isEmpty()){
                     DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference();
                     NotesModal notesModal=new NotesModal(title_text,description_text,name);
-                    databaseReference.child("group").child("group_code").child(group_id).child("notes").push().setValue(notesModal);
+                    databaseReference.child("group").child("group_code").child(group_id).child("notes").child(uid).push().setValue(notesModal);
                     AsyncTask.execute(() -> {
                         Intent intent=new Intent(AddNotes.this, NotesMain.class);
                         startActivity(intent);

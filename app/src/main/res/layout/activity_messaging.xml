@@ -116,7 +116,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout3"
-        android:layout_width="404dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#ECECEC"
@@ -131,9 +131,11 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/colour_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/messaging"
+            app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="5dp" />
 
         <ImageButton
@@ -144,7 +146,7 @@
             android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView8"
             app:srcCompat="@drawable/insert_images" />
@@ -180,7 +182,7 @@
                 android:layout_alignParentBottom="true"
 
                 android:layout_toStartOf="@+id/send"
-                android:background="@drawable/type_message"
+                android:background="@drawable/edit_text_message"
                 android:gravity="center|left"
                 android:hint="Type your message here"
                 android:includeFontPadding="true"
@@ -193,9 +195,11 @@
             <me.panavtec.drawableview.DrawableView
                 android:id="@+id/drawable_view"
                 android:layout_width="0dp"
-                android:layout_height="300dp"
+                android:layout_height="268dp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@+id/send"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/typed_message" />
 
             <ImageButton

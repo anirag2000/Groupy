@@ -50,8 +50,16 @@ public class ColourAdapter extends RecyclerView.Adapter<ColourAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called.");
-
-     holder.image.setColorFilter(Color.parseColor(mImageUrls.get(position)));
+if(mImageUrls.get(position).equals("A"))
+{
+ holder.image.setImageResource(R.drawable.doodle);
+}
+else if(mImageUrls.get(position).equals("B")){
+    holder.image.setImageResource(R.drawable.text);
+}
+else {
+    holder.image.setColorFilter(Color.parseColor(mImageUrls.get(position)));
+}
      holder.image.setBackgroundColor(Color.parseColor("#ECECEC"));
 
 
@@ -59,8 +67,20 @@ public class ColourAdapter extends RecyclerView.Adapter<ColourAdapter.ViewHolder
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Apps.colour=mImageUrls.get(position);
-                ((MessagingActivity)mContext).change_colour();
+                if(mImageUrls.get(position).length()>3) {
+                    Apps.colour = mImageUrls.get(position);
+                    ((MessagingActivity) mContext).change_colour();
+                }
+                else
+                {
+                    if(mImageUrls.get(position).equals("A")){
+                        ((MessagingActivity) mContext).open_draw();
+                    }
+                    else if(mImageUrls.get(position).equals("B")){
+                    holder.image.setImageResource(R.drawable.italic);
+                        ((MessagingActivity) mContext).change_style();
+                    }
+                }
         }
         });
     }
