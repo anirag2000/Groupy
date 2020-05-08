@@ -159,16 +159,6 @@ public class First_time extends AppCompatActivity {
 
 
 
-    private void requestStorage(){
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},storagecode);
-    }
-
-    private void requestLocation(){
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},storagecode);
-    }
-
-
-
 
 
 
@@ -178,32 +168,6 @@ public class First_time extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
-        if(ContextCompat.checkSelfPermission(First_time.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
-            Toast.makeText(First_time.this,"You have Granted Storage Permission", Toast.LENGTH_SHORT).show();
-
-        } else{
-
-            requestStorage();
-
-
-        }
-
-        if(ContextCompat.checkSelfPermission(First_time.this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(First_time.this,"You have Granted Location Permission", Toast.LENGTH_SHORT).show();
-        } else{
-            requestLocation();
-        }
-
-
-
-
-
-
-
-
 
 
 

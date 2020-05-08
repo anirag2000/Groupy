@@ -21,7 +21,7 @@ public class FragmentAdapter  extends FragmentStatePagerAdapter {
         if (position == 0) {
             return new Profile();
         } else if (position == 1){
-            return new Notes();
+            return new Profile();
         } else if(position==2) {
             return new Location();
         }
