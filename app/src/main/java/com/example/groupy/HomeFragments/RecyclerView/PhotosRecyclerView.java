@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.groupy.R;
 import com.example.groupy.Tools.img;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -40,8 +42,8 @@ public class PhotosRecyclerView extends RecyclerView.Adapter<PhotosRecyclerView.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         //get the image in list
-
-        Glide.with(mContext).load(mData.get(position).getImage()).into(holder.photos);
+ 
+       Picasso.get().load(mData.get(position).getImage()).networkPolicy(NetworkPolicy.OFFLINE).into(holder.photos);
 
 
 

@@ -134,6 +134,10 @@ public class Photos extends Fragment {
         manager= new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         manager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         staggeredrv.setLayoutManager(manager);
+        staggeredrv.setHasFixedSize(true);
+        staggeredrv.setItemViewCacheSize(20);
+        staggeredrv.setDrawingCacheEnabled(true);
+        staggeredrv.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         adapter= new PhotosRecyclerView(getContext(),images);
         staggeredrv.setAdapter(adapter);
 
