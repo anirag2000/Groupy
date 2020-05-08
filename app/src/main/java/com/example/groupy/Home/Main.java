@@ -20,7 +20,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.groupy.FusedLocation;
 import com.example.groupy.HomeFragments.FragmentAdapter;
-import com.example.groupy.Notes.AddNotes;
 import com.example.groupy.R;
 import com.example.groupy.SigningIn.MainActivity;
 import com.example.groupy.calling.Apps;
@@ -164,7 +163,7 @@ public class Main extends Fragment {
         });
         Button drawable = view.findViewById(R.id.button4);
         drawable.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), AddNotes.class);
+            Intent intent = new Intent(getContext(), Main2.class);
             startActivity(intent);
         });
 

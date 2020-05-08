@@ -1,9 +1,17 @@
 package com.example.groupy.SigningIn;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,21 +23,17 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TabHost;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.groupy.Home.Home;
 import com.example.groupy.R;
+import com.example.groupy.Tools.RandomString;
 import com.example.groupy.User_details;
-import com.example.groupy.calling.Apps;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,7 +46,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 public class First_time extends AppCompatActivity {
     String uid;
-
+    FirebaseAuth mAuth;
     String group_id_string;
     boolean group_exists = false;
     boolean fields_valid = false;
@@ -55,37 +59,21 @@ public class First_time extends AppCompatActivity {
     Dialog dialog;
 
 
-    int storagecode = 1;
+    int storagecode=1;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        uid=Apps.uid;
-
-        //////start of oncreate function
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_time);
-
-
-        imageview = findViewById(R.id.imageView4);////for verification for groupid  image(tick or cross)
-        imageview.setVisibility(View.INVISIBLE);//initially should be invisible
-
-
-        ///iniating alert dialog box
+        imageview = findViewById(R.id.imageView4);
         AlertDialog.Builder builder = new AlertDialog.Builder(First_time.this);
         builder.setCancelable(false); // if you want user to wait for some process to finish,
         builder.setView(R.layout.layout_loading_dialog);
-        dialog = builder.create();
-
-        ///////
-
-
-        ///for storing photots in firebase storage
+        dialog= builder.create();
+        imageview.setVisibility(View.INVISIBLE);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
-
-        ////on clicking on profile pic
         profilepic = findViewById(R.id.profilepic);
         profilepic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,15 +85,15 @@ public class First_time extends AppCompatActivity {
         });
 
 
-/////////////////////////global uid set here/////////////////
-        uid = Apps.uid;
-        if (uid.trim().isEmpty()) {
-            ///intent to main activity
+        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentFirebaseUser == null) {
+//            Intent intent = new Intent(First_time.this, MainActivity.class);
+//            startActivity(intent);
+        } else {
+            uid = currentFirebaseUser.getUid();
         }
-/////////////////////////global uid set here/////////////////
 
-
-        /////////////////////////////for verification of group id/////////////////////////////////////////////
         EditText group_id = findViewById(R.id.group_code);
         group_id.addTextChangedListener(new TextWatcher() {
 
@@ -148,53 +136,83 @@ public class First_time extends AppCompatActivity {
 
             }
         });
-/////////////////////////////for verification of group id/////////////////////////////////////////////
+
 
     }
 
 
-////////////////////EEND OF oncreate function//////////////////////////////////////////
 
 
-    private void requestStorage() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, storagecode);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private void requestStorage(){
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},storagecode);
     }
 
-    private void requestLocation() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, storagecode);
+    private void requestLocation(){
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},storagecode);
     }
 
 
-    ////////////////
+
+
+
+
+
+
+    //storing the image
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
-        if (ContextCompat.checkSelfPermission(First_time.this,
+        if(ContextCompat.checkSelfPermission(First_time.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-            Toast.makeText(First_time.this, "You have Granted Storage Permission", Toast.LENGTH_SHORT).show();
+            Toast.makeText(First_time.this,"You have Granted Storage Permission", Toast.LENGTH_SHORT).show();
 
-        } else {
+        } else{
 
             requestStorage();
 
 
         }
 
-        if (ContextCompat.checkSelfPermission(First_time.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(First_time.this, "You have Granted Location Permission", Toast.LENGTH_SHORT).show();
-        } else {
+        if(ContextCompat.checkSelfPermission(First_time.this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(First_time.this,"You have Granted Location Permission", Toast.LENGTH_SHORT).show();
+        } else{
             requestLocation();
         }
 
 
+
+
+
+
+
+
+
+
+
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            dialog.show();
+           dialog.show();
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri Result_uri = result.getUri();
-uid=Apps.uid;
+
                 final StorageReference ref = mStorageRef.child(uid).child("picture.jpg");
                 ref.putFile(Result_uri).addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
                     downloadUrl = uri;
@@ -214,7 +232,9 @@ uid=Apps.uid;
                         dialog.hide();
                     }
                 });
-            } else {
+            }
+            else
+            {
                 dialog.hide();
             }
         }
@@ -223,8 +243,17 @@ uid=Apps.uid;
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    //signout
 
-    //when user clicks on registerrrr
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Toast.makeText(First_time.this, "stopped", Toast.LENGTH_LONG).show();
+
+
+    }
+
+//make the user
     public void register(View view) {
         EditText name = findViewById(R.id.name);
         EditText email = findViewById(R.id.email);
@@ -248,7 +277,7 @@ uid=Apps.uid;
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         if (fields_valid) {
-
+            Toast.makeText(First_time.this, "gonee", Toast.LENGTH_LONG).show();
             if (group_code_exists) {
                 if (group_exists) {
 
@@ -265,6 +294,7 @@ uid=Apps.uid;
                     myRef.setValue(user_details);
 
                     rootRef.child("group").child("group_code").child(group_id_string).child("ids").child(uid).setValue(user_details);
+
 
 
                     dialog.show();
@@ -298,8 +328,14 @@ uid=Apps.uid;
 
                 //making the group as an User
 
-                User_details group = new User_details("My Group", date_string, "groupemaildoesntexist@email.com", group_id_string
-                        , "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU", group_id_string);
+                User_details group= new User_details("My Group",date_string,"groupemaildoesntexist@email.com",group_id_string
+                        ,"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQiuMo9XLPR_Zt5tk2Bytb6yfTpF7mFLP_C2aSdRqNKTnWwHTUj&usqp=CAU",group_id_string);
+
+
+
+
+
+
 
 
                 User_details user_details;
@@ -322,19 +358,21 @@ uid=Apps.uid;
                 rootRef.child("Users").child(group_id_string).setValue(group);
                 rootRef.child("Users").child(uid).setValue(user_details);
 
+dialog.show();
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
 
-
+                        dialog.hide();
                         Intent intent = new Intent(First_time.this, Home.class);
                         startActivity(intent);
 
 
                     }
                 }, 2000);
+
 
 
             }
@@ -348,43 +386,5 @@ uid=Apps.uid;
 }
 
 
-class RandomString {
 
-    // function to generate a random string of length n
-    static String getAlphaNumericString(int n) {
-
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
-
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(n);
-
-        for (int i = 0; i < n; i++) {
-
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int) (AlphaNumericString.length()
-                    * Math.random());
-
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-
-        return sb.toString();
-    }
-
-    String generate() {
-
-        // Get the size n
-        int n = 6;
-
-        // Get and display the alphanumeric string
-        return (RandomString
-                .getAlphaNumericString(n));
-    }
-}
 
