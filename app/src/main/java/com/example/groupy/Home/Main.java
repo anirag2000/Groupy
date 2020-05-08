@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,8 +73,11 @@ public class Main extends Fragment {
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("RecentLocation");
             reference.child(Apps.uid).child("latitude").setValue(lat);
             reference.child(Apps.uid).child("longitude").setValue(lon);
+            Toast.makeText(getContext(),"Location is updated",Toast.LENGTH_SHORT).show();
         });
         //get the location now
+        //Toast.makeText(getContext(),"Location is updated",Toast.LENGTH_SHORT).show();
+
         fusedLocation.getCurrentLocation(3); // 3 times for accuracy
 
 
