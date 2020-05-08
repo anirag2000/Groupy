@@ -161,11 +161,7 @@ public class Main extends Fragment {
 
 
         });
-        Button drawable = view.findViewById(R.id.button4);
-        drawable.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), Main2.class);
-            startActivity(intent);
-        });
+
 
 //////////for sliding into dms xD////////////////////
         ImageButton messages = view.findViewById(R.id.messages);
