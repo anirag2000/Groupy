@@ -47,6 +47,8 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class Photos extends Fragment {
 
     //adding pictures
@@ -54,7 +56,7 @@ public class Photos extends Fragment {
     Uri downloadUrl;
     String final_uri;
     private static int RESULT_LOAD_IMAGE = 1;
-    Button addpichos;
+    CircleImageView addpichos;
     FirebaseUser currentuser = FirebaseAuth.getInstance().getCurrentUser();
     DatabaseReference reference= FirebaseDatabase.getInstance().getReference();
 
@@ -109,7 +111,22 @@ public class Photos extends Fragment {
 
 
         // Inflate the layout for this fragment
+
+
+
+
+
         View view = inflater.inflate(R.layout.fragment_photos, container, false);
+
+
+
+        addpichos=view.findViewById(R.id.addpichos);
+        addpichos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addPhoto();
+            }
+        });
 
         images = new ArrayList<>();
         staggeredrv=view.findViewById(R.id.recyclerviewphotos);
